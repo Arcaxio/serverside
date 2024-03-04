@@ -30,8 +30,8 @@ function getProduct($conn, $id)
 
 function updateProduct($conn)
 {
-    $query = "UPDATE products SET product_name = ?, description = ?, price = ?, category_id = ? ";
-    $params = [$_POST['product_name'], $_POST['description'], $_POST['price'], $_POST['category_id']];
+    $query = "UPDATE products SET product_name = ?, description = ?, price = ?, image_path = ?, category_id = ? ";
+    $params = [$_POST['product_name'], $_POST['description'], $_POST['price'], $_POST['image_path'], $_POST['category_id']];
 
     $query .= " WHERE product_id = ?";
     $params[] = $_POST['product_id'];
@@ -72,39 +72,45 @@ function updateProduct($conn)
         <div class="card p-4">
 
             <h1>Edit Product</h1>
-    
+
             <?php if (isset($_POST['submit'])) { ?>
                 <div class="alert alert-danger">
                 </div>
             <?php } ?>
-    
+
             <form method="post">
                 <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
-    
+
                 <div class="form-group py-2">
                     <label for="product_name">Product Name:</label>
                     <input type="text" class="form-control" id="product_name" name="product_name"
                         value="<?php echo htmlspecialchars($product['product_name']); ?>" required>
                 </div>
-    
+
                 <div class="form-group py-2">
                     <label for="description">Description:</label>
                     <textarea class="form-control" id="description" name="description"
                         required><?php echo htmlspecialchars($product['description']); ?></textarea>
                 </div>
-    
+
                 <div class="form-group py-2">
                     <label for="price">Price:</label>
                     <input type="number" class="form-control" id="price" name="price"
                         value="<?php echo htmlspecialchars($product['price']); ?>" required>
                 </div>
-    
+
+                <div class="form-group py-2">
+                    <label for="image_path">Image Link:</label>
+                    <input type="text" class="form-control" id="image_path" name="image_path"
+                        value="<?php echo htmlspecialchars($product['image_path']); ?>" required>
+                </div>
+
                 <div class="form-group py-2">
                     <label for="category_id">Category:</label>
                     <input type="number" class="form-control" id="category_id" name="category_id"
                         value="<?php echo htmlspecialchars($product['category_id']); ?>" required>
                 </div>
-    
+
                 <button type="submit" name="submit" class="btn btn-primary mt-3">Save Changes</button>
             </form>
         </div>

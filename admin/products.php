@@ -33,7 +33,7 @@ function addProduct($conn)
         $_POST['product_name'],
         $_POST['description'],
         $_POST['price'],
-        '', // Set image_path to empty for now
+        $_POST['image_path'],
         $_POST['category_id']
     ]);
     header('Location: products.php');
@@ -126,6 +126,11 @@ function getProduct($conn, $id)
                     <div class="py-1">
                         <label for="price">Price:</label>
                         <input type="number" class="form-control" id="price" name="price" step=".01" required>
+                    </div>
+
+                    <div class="py-1">
+                        <label for="image_path">Image Link:</label>
+                        <input type="text" class="form-control" id="image_path" name="image_path" required>
                     </div>
 
                     <div class="py-1">
