@@ -16,6 +16,7 @@ if (isset($_POST['username'], $_POST['password'])) {
     if ($staff && password_verify($password, $staff['password'])) {
         $_SESSION['staff_id'] = $staff['staff_id'];
         $_SESSION['role'] = $staff['role'];
+        $_SESSION['username'] = $staff['username'];
         header('Location: staff.php'); // Redirect to staff panel
     } else {
         echo "Incorrect username or password";
