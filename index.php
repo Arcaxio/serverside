@@ -9,6 +9,13 @@ include 'includes/db_connect.php'; // Include database connection
     <title>Online Order Management System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        img {
+            height: 320px;
+            width: 320px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 
 <body>
