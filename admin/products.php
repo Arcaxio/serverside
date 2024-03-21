@@ -76,119 +76,137 @@ function getProduct($conn, $id)
     <title>Product Management</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <style>
-        body {
-            background: rgb(5, 0, 100);
-            background: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(30, 30, 30, 1) 100%);
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px solid lightgray;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
-    <div class="container h-100">
-        <div class="row py-3">
-            <div class="col-6">
-                <h1 class="text-light">Staff Control Panel</h1>
-                <p class="text-light fs-4">Welcome,
-                    <?php echo $username; ?>
-                </p>
+    <div class="row m-0 min-vh-100">
+        <div class="col-2 p-0 bg-dark-subtle">
+            <div class="p-4 mx-4 fw-medium">
+                <i class="bi bi-app-indicator fs-4 me-3"></i>
+                <span class="ms-2 fs-4">Boom Inc</span>
+                </a>
             </div>
-            <div class="col-6 d-flex align-items-center justify-content-end">
+            <div class="mx-4">
+                <div class="p-3">
+                    <i class="bi bi-house-door me-3"></i>
+                    Home
+                </div>
+                <div class="p-3" onclick="location.href='orders.php';" style="cursor: pointer;">
+                    <i class="bi bi-cart me-3"></i>
+                    Order
+                </div>
+                <div class="p-3 border rounded rounded-3 bg-white">
+                    <i class="bi bi-box-seam me-3"></i>
+                    Product
+                </div>
+                <div class="p-3">
+                    <i class="bi bi-people me-3"></i>
+                    Customer
+                </div>
                 <?php if ($_SESSION['role'] == 'admin'): ?>
-                    <a href="register.php" class="btn btn-secondary">Register Manager</a>
+                    <a href="register.php" class="my-3 btn btn-secondary">Register Manager</a>
                 <?php endif; ?>
-                <a href="logout.php" class="btn btn-danger ms-4">Logout</a>
             </div>
         </div>
-
-        <h1 class="text-light py-3">Product Management</h1>
-        <div class="row bg-light p-4 rounded" style="--bs-bg-opacity: .75;">
-            <div class="col-6 justify-content-around">
-                <h3 class="mb-2">Add Product</h3>
-                <form method="post">
-                    <input type="hidden" name="product_id"
-                        value="<?php echo isset ($product) ? $product['product_id'] : ''; ?>">
-                    <div class="py-1">
-                        <label for="product_name">Product Name:</label>
-                        <input type="text" class="form-control" id="product_name" name="product_name" required>
-                    </div>
-
-                    <div class="py-1">
-                        <label for="description">Description:</label>
-                        <textarea class="form-control" id="description" name="description"></textarea>
-                    </div>
-
-                    <div class="py-1">
-                        <label for="price">Price:</label>
-                        <input type="number" class="form-control" id="price" name="price" step=".01" required>
-                    </div>
-
-                    <div class="py-1">
-                        <label for="image_path">Image Link:</label>
-                        <input type="text" class="form-control" id="image_path" name="image_path" required>
-                    </div>
-
-                    <div class="py-1">
-                        <label for="category_id">Category:</label>
-                        <select class="form-control" id="category_id" name="category_id">
-                            <option value="1">Category 1</option>
-                            <option value="2">Category 2</option>
-                        </select>
-                    </div>
-                    <button type="submit" name="submit" class="btn btn-primary mt-3">Add Product</button>
-                </form>
-
+        <div class="col-10 p-0 bg-body-secondary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="fw-medium fs-4 p-3 mx-3">
+                    Product Management
+                </div>
+                <div class="px-4 d-flex align-items-center">
+                    <span class="fs-6 fw-medium pe-4">Welcome,
+                        <?php echo $username; ?>
+                    </span>
+                    <a href="logout.php" class="btn btn-outline-dark">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
             </div>
 
-            <div class="col-6">
-                <h3 class="mb-3">Products</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Product Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th colspan="2" class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $stmt = $conn->query("SELECT * FROM products");
-                        while ($row = $stmt->fetch()) { ?>
-                            <tr>
-                                <td>
-                                    <?php echo $row['product_name']; ?>
-                                </td>
-                                <td>
-                                    <?php echo $row['category_id']; ?>
-                                </td>
-                                <td>
-                                    <?php echo $row['price']; ?>
-                                </td>
-                                <td class="text-center"><a
-                                        href="edit_product.php?id=<?php echo $row['product_id']; ?>">Edit</a>
-                                </td>
-                                <td class="text-center">
-                                    <!-- <a href="products.php?action=delete&id=<?php echo $row['product_id']; ?>">Delete</a> -->
-                                    <a href="" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
-                                        data-product-id="<?php echo $row['product_id']; ?>">Delete</a>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+            <div class="bg-white p-4">
+                <div class="p-3 border rounded rounded-3">
+
+                    <div class="row">
+                        <div class="col-6 justify-content-around">
+                            <h3 class="mb-2">Add Product</h3>
+                            <form method="post">
+                                <input type="hidden" name="product_id"
+                                    value="<?php echo isset ($product) ? $product['product_id'] : ''; ?>">
+                                <div class="py-1">
+                                    <label for="product_name">Product Name:</label>
+                                    <input type="text" class="form-control" id="product_name" name="product_name"
+                                        required>
+                                </div>
+
+                                <div class="py-1">
+                                    <label for="description">Description:</label>
+                                    <textarea class="form-control" id="description" name="description"></textarea>
+                                </div>
+
+                                <div class="py-1">
+                                    <label for="price">Price:</label>
+                                    <input type="number" class="form-control" id="price" name="price" step=".01"
+                                        required>
+                                </div>
+
+                                <div class="py-1">
+                                    <label for="image_path">Image Link:</label>
+                                    <input type="text" class="form-control" id="image_path" name="image_path" required>
+                                </div>
+
+                                <div class="py-1">
+                                    <label for="category_id">Category:</label>
+                                    <select class="form-control" id="category_id" name="category_id">
+                                        <option value="1">Category 1</option>
+                                        <option value="2">Category 2</option>
+                                    </select>
+                                </div>
+                                <button type="submit" name="submit" class="btn btn-primary mt-3">Add Product</button>
+                            </form>
+
+                        </div>
+
+                        <div class="col-6">
+                            <h3 class="mb-3">Products</h3>
+                            <table class="table border">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th colspan="2" class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $stmt = $conn->query("SELECT * FROM products");
+                                    while ($row = $stmt->fetch()) { ?>
+                                        <tr>
+                                            <td>
+                                                <?php echo $row['product_name']; ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $row['category_id']; ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $row['price']; ?>
+                                            </td>
+                                            <td class="text-center"><a
+                                                    href="edit_product.php?id=<?php echo $row['product_id']; ?>">Edit</a>
+                                            </td>
+                                            <td class="text-center">
+                                                <!-- <a href="products.php?action=delete&id=<?php echo $row['product_id']; ?>">Delete</a> -->
+                                                <a href="" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                                    data-product-id="<?php echo $row['product_id']; ?>">Delete</a>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
