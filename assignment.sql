@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 04, 2024 at 12:39 PM
+-- Generation Time: Mar 21, 2024 at 07:13 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,19 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `cart`
+--
+
+CREATE TABLE `cart` (
+  `cart_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `categories`
 --
 
@@ -40,10 +53,15 @@ CREATE TABLE `categories` (
 
 CREATE TABLE `customers` (
   `customer_id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `address` text NOT NULL,
-  `phone_number` varchar(255) NOT NULL
+  `phone_number` varchar(255) NOT NULL,
+  `zipcode` varchar(255) NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `state` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -70,6 +88,7 @@ CREATE TABLE `order_items` (
   `order_item_id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -83,6 +102,7 @@ CREATE TABLE `products` (
   `product_id` int(11) NOT NULL,
   `product_name` varchar(255) NOT NULL,
   `description` text NOT NULL,
+  `stock` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `image_path` varchar(255) NOT NULL,
   `category_id` int(11) NOT NULL
@@ -92,8 +112,9 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `image_path`, `category_id`) VALUES
-(3, 'Premium Phone Case', 'Sleek and protective case for your phone', 19.99, 'premium_case.jpg', 1);
+INSERT INTO `products` (`product_id`, `product_name`, `description`, `stock`, `price`, `image_path`, `category_id`) VALUES
+(3, 'Premium Phone Case', 'Sleek and protective case for your phone', 0, 19.99, 'premium_case.jpg', 1),
+(6, 'Adidas Air Force Max 123', 'Fake Nikes Max Air Force 123', 0, 289.99, 'https://i.ebayimg.com/images/g/TH0AAOSwGTBe9uCO/s-l1600.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -119,6 +140,12 @@ INSERT INTO `staff` (`staff_id`, `username`, `password`, `role`) VALUES
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`cart_id`);
 
 --
 -- Indexes for table `categories`
@@ -162,6 +189,12 @@ ALTER TABLE `staff`
 --
 
 --
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
@@ -189,7 +222,7 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `staff`
