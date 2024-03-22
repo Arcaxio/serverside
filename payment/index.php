@@ -93,8 +93,26 @@
                         <h5 class="card-title">Buyer Information</h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <!-- Buyer information form here -->
+                                <div class="form-group">
+                                    <label for="buyer_name">Name:</label>
+                                    <input type="text" class="form-control" id="buyer_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="buyer_email">Email:</label>
+                                    <input type="email" class="form-control" id="buyer_email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="buyer_address">Address:</label>
+                                    <input type="text" class="form-control" id="buyer_address" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="buyer_phone">Phone:</label>
+                                    <input type="tel" class="form-control" id="buyer_phone" required>
+                                </div>
                             </div>
+                        </div>
+
+
                         </div>
 
                         <!-- Payment Method Section -->
@@ -198,8 +216,22 @@
         // If validation passes, proceed with payment submission
         // Otherwise, display error messages to the user
 
-        console.log('Buyer Information:', buyerName, buyerEmail, buyerAddress, buyerPhone);
-        // Here, can perform further actions such as sending buyer information and payment details to server for processing
+        // Make an AJAX request to insert payment record
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'payment.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                console.log(xhr.responseText);
+                // Further actions after successful payment submission
+            } else {
+                console.error('Error:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function() {
+            console.error('Request failed');
+        };
+        xhr.send('buyer_name=' + buyerName + '&buyer_email=' + buyerEmail + '&buyer_address=' + buyerAddress + '&buyer_phone=' + buyerPhone);
     });
 
 </script>
