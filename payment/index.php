@@ -1,139 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <title>Payment Details</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Details</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        body {
-            background: rgb(5, 0, 100);
-            background: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(30, 30, 30, 1) 100%);
-            color: white;
-        }
-        .container {
-            padding-top: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .btn {
-            margin-top: 10px;
-        }
-        .table {
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
+
 <body>
+    <div class="row m-0 min-vh-100">
+        <div class="col-2 p-0 bg-dark-subtle">
+            <div class="p-4 mx-4 fw-medium">
+                <i class="bi bi-app-indicator fs-4 me-3"></i>
+                <span class="ms-2 fs-4">Boom Inc</span>
+            </div>
+            <!-- Side navigation links here -->
+        </div>
+        <div class="col-10 p-0 bg-body-secondary">
+            <!-- Header with user info -->
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="fw-medium fs-3 p-3 mx-3">
+                    Payment Details
+                </div>
+                <div class="px-4 d-flex align-items-center">
+                    <!-- User info and logout button -->
+                    <span class="fs-6 fw-medium pe-4">Welcome,
+                        <?php echo $username; ?>
+                    </span>
+                    <a href="logout.php" class="btn btn-outline-dark">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
 
-<div class="container">
-    <h1 class="text-center">Payment Details</h1>
+            <!-- Main content -->
+            <div class="bg-white p-4">
+                <div class="p-3 border rounded rounded-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Payment Information</h5>
+                        <!-- Payment ID and Payment Date/Time Section -->
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="payment_id">Payment ID:</label>
+                                    <input type="text" class="form-control" id="payment_id" readonly>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="payment_datetime">Payment Date & Time:</label>
+                                    <input type="text" class="form-control" id="payment_datetime" readonly>
+                                </div>
+                            </div>
+                        </div>
 
-    <!-- Payment ID and Payment Date/Time Section -->
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="payment_id">Payment ID:</label>
-                        <input type="text" class="form-control" id="payment_id" readonly>
+                        <!-- Selected Order Products Section -->
+                        <div class="table-responsive">
+                            <h5 class="card-title">Selected Order Products</h5>
+                            <table class="table">
+                                <!-- Table headers -->
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Product Name</th>
+                                        <th>Price (RM)</th>
+                                        <th>Order Amount</th>
+                                        <th>Total Price (RM)</th>
+                                    </tr>
+                                </thead>
+                                <!-- Table body for selected products -->
+                                <tbody id="selected_products">
+                                    <!-- Order products will be populated dynamically here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Total Payment Amount Section -->
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="total_amount">Total Payment Amount (RM):</label>
+                                    <input type="text" class="form-control" id="total_amount" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buyer Information Form -->
+                        <h5 class="card-title">Buyer Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Buyer information form here -->
+                            </div>
+                        </div>
+
+                        <!-- Payment Method Section -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="payment_method">Select Payment Method:</label>
+                                    <select class="form-control" id="payment_method">
+                                        <option value="Debit/Credit Card">Debit/Credit Card</option>
+                                        <option value="PayPal">PayPal</option>
+                                        <option value="E-Wallet">E-Wallet</option>
+                                        <!-- Add more payment methods if needed -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="payment_datetime">Payment Date & Time:</label>
-                        <input type="text" class="form-control" id="payment_datetime" readonly>
+
+                <!-- Confirm Payment Button -->
+                <div class="row justify-content-center mt-4">
+                    <div class="col-md-6 text-center">
+                        <button type="submit" class="btn btn-primary" id="confirm_payment">Confirm Payment</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-
-
-    <!-- Additional Form for Buyer Information -->
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h3 class="text-center">Buyer Information</h3>
-            <div class="form-group">
-                <label for="buyer_name">Name:</label>
-                <input type="text" class="form-control" id="buyer_name" required>
-            </div>
-            <div class="form-group">
-                <label for="buyer_email">Email:</label>
-                <input type="email" class="form-control" id="buyer_email" required>
-            </div>
-            <div class="form-group">
-                <label for="buyer_address">Address:</label>
-                <textarea class="form-control" id="buyer_address" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="buyer_phone">Phone Number:</label>
-                <input type="tel" class="form-control" id="buyer_phone" required>
-            </div>
-        </div>
-    </div>
-
-    <!-- Selected Products Section -->
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h3 class="text-center">Selected Order Products</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Product Name</th>
-                        <th>Price (RM)</th>
-                        <th>Order Amount</th>
-                        <th>Total Price (RM)</th>
-                    </tr>
-                </thead>
-                <tbody id="selected_products">
-                    <!-- Order products will be populated dynamically here -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Total Payment Amount Section -->
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="total_amount">Total Payment Amount (RM):</label>
-                <input type="text" class="form-control" id="total_amount" readonly>
-            </div>
-        </div>
-    </div>
-
-    <!-- Payment Method Section -->
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="payment_method">Select Payment Method:</label>
-                <select class="form-control" id="payment_method">
-                    <option value="Debit/Credit Card">Debit/Creadit Card</option>
-                    <option value="PayPal">PayPal</option>
-                    <option value="E-Wallet">E-Wallet</option>
-                    <!-- Add more payment methods if needed -->
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Confirm Payment Button -->
-<div class="row justify-content-center">
-    <div class="col-md-6 text-center">
-        <button type="submit" class="btn btn-primary" id="confirm_payment">Confirm Payment</button>
-    </div>
-</div>
-<br><br>
-
-
-<script>
+    <script>
     // JavaScript code to fetch and display selected order products, total amount, and payment ID
     // Example code for dynamic population (replace with actual code to fetch cart items)
     // Dummy data for demonstration
