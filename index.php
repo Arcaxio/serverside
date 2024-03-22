@@ -1,5 +1,17 @@
 <?php
 include 'includes/db_connect.php'; // Include database connection
+
+$secondsInWeek = 60 * 60 * 24 * 7;
+// Set cookie lifetime and start the session
+session_set_cookie_params($secondsInWeek);
+session_start();
+
+if (isset ($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+} else {
+    // Handle the case when there is no 'username' in session (Optional)
+    $username = null;  // Set a default, or perform other actions if needed
+}
 ?>
 
 <!DOCTYPE html>
@@ -7,8 +19,8 @@ include 'includes/db_connect.php'; // Include database connection
 
 <head>
     <title>Online Order Management System</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -34,21 +46,35 @@ include 'includes/db_connect.php'; // Include database connection
                 <i class="bi bi-app-indicator fs-3 me-3"></i>
                 <span class="ms-2 fs-3">Boom Inc</span>
             </div>
-            <ul class="nav justify-content-end">
-                <li class="nav-item">
-                    <a class="nav-link text-light fw-medium" href="products.php">Products</a>
+            <ul class="nav justify-content-end gap-1">
+                <li>
+                    <span class="nav-link text-light fw-medium">
+                        <?php if (isset ($username)) {
+                            echo "Welcome, " . $username . "!";
+                        } ?>
+                    </span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-light fw-medium" href="#">Link</a>
+                    <a class="nav-link fw-medium" href="products.php">Products</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-light fw-medium" href="#">Cart</a>
+                    <a class="nav-link fw-medium" href="cart.php">Cart</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light fw-medium" href="#">Login</a>
-                </li>
+                <?php if (isset ($_SESSION['username'])) { ?>
+                    <li class="nav-logging">
+                        <a class="nav-link fw-medium" href="logout.php">Logout</a>
+                    </li>
+                <?php } else { ?>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="register.php">Register</a>
+                    </li>
+                    <li class="nav-logging">
+                        <a class="nav-link fw-medium" href="login.php">Login</a>
+                    </li>
+                <?php } ?>
             </ul>
         </nav>
+
     </header>
 
     <div class="container p-3">
@@ -131,7 +157,7 @@ include 'includes/db_connect.php'; // Include database connection
                                         <p class="card-text">$
                                             <?php echo $row['price']; ?>
                                         </p>
-                                        <a href="product-details.php?id=<?php echo $row['product_id']; ?>"
+                                        <a href="product_details.php?id=<?php echo $row['product_id']; ?>"
                                             class="btn btn-primary">View Details</a>
                                     </div>
                                 </div>

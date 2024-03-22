@@ -1,5 +1,17 @@
 <?php
 include 'includes/db_connect.php'; // Include database connection
+
+$secondsInWeek = 60 * 60 * 24 * 7;
+// Set cookie lifetime and start the session
+session_set_cookie_params($secondsInWeek);
+session_start();
+
+if (isset ($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+} else {
+    // Handle the case when there is no 'username' in session (Optional)
+    $username = null;  // Set a default, or perform other actions if needed
+}
 ?>
 
 <!DOCTYPE html>
@@ -34,19 +46,25 @@ include 'includes/db_connect.php'; // Include database connection
                 <i class="bi bi-app-indicator fs-3 me-3"></i>
                 <span class="ms-2 fs-3">Boom Inc</span>
             </div>
-            <ul class="nav justify-content-end">
+            <ul class="nav justify-content-end gap-1">
                 <li class="nav-item">
-                    <a class="nav-link text-light fw-medium" href="products.php">Products</a>
+                    <a class="nav-link fw-medium" href="products.php">Products</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-light fw-medium" href="#">Link</a>
+                    <a class="nav-link fw-medium" href="cart.php">Cart</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light fw-medium" href="#">Cart</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light fw-medium" href="#">Login</a>
-                </li>
+                <?php if (isset ($_SESSION['username'])) { ?>
+                    <li class="nav-logging">
+                        <a class="nav-link fw-medium" href="logout.php">Logout</a>
+                    </li>
+                <?php } else { ?>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="register.php">Register</a>
+                    </li>
+                    <li class="nav-logging">
+                        <a class="nav-link fw-medium" href="login.php">Login</a>
+                    </li>
+                <?php } ?>
             </ul>
         </nav>
     </header>
@@ -90,7 +108,7 @@ include 'includes/db_connect.php'; // Include database connection
                                         <p class="card-text">$
                                             <?php echo $productRow['price']; ?>
                                         </p>
-                                        <a href="product-details.php?id=<?php echo $productRow['product_id']; ?>"
+                                        <a href="product_details.php?id=<?php echo $productRow['product_id']; ?>"
                                             class="btn btn-primary">View Details</a>
                                     </div>
                                 </div>

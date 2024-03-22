@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2024 at 04:02 AM
+-- Generation Time: Mar 22, 2024 at 07:22 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -72,6 +72,14 @@ CREATE TABLE `customers` (
   `state` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`customer_id`, `username`, `password`, `name`, `email`, `address`, `phone_number`, `zipcode`, `city`, `state`) VALUES
+(1, 'customer123', '$2y$10$/0uS4KyGj8uJS7aozeO9seWMGQKZkG8yorslPHC1I/av6GJIRbxdm', '', 'customer123@mail.com', '', '', '', '', ''),
+(2, 'customer321', '$2y$10$28dZT.mxwSHHrJB/OR8uxO67CywHqIRLpZtfo5lNclsiDvdHE0N1u', '', 'customer321@gmail.com', '', '', '', '', '');
+
 -- --------------------------------------------------------
 
 --
@@ -122,7 +130,7 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`product_id`, `product_name`, `description`, `stock`, `price`, `image_path`, `category_id`) VALUES
 (3, 'Premium Phone Case', 'Sleek and protective case for your phone', 0, 19.99, 'premium_case.jpg', 2),
-(6, 'Adidas Air Force Max 123', 'Fake Nikes Max Air Force 123', 0, 289.99, 'https://i.ebayimg.com/images/g/TH0AAOSwGTBe9uCO/s-l1600.jpg', 1),
+(6, 'Adidas Air Force Max 123', 'Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 ', 0, 289.99, 'https://i.ebayimg.com/images/g/TH0AAOSwGTBe9uCO/s-l1600.jpg', 1),
 (11, 'Adidas Air Force Max', 'Lorem Ipsum', 0, 150.00, 'https://cdn-images.farfetch-contents.com/12/57/95/17/12579517_12011969_1000.jpg', 1),
 (12, 'Adidas Air Force Max 1s', 'Lorems Impsum is the best', 0, 1289.99, 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/6b1ebdb3-9043-492d-94bf-8ab78dccafb9/air-max-dn-mens-shoes-27XkSQ.png', 1),
 (13, 'Nike Hype Beast', 'HYPER', 0, 1989.00, 'https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2019%2F10%2Fnike-air-force-max-ii-white-black-1.jpg?cbr=1&q=90', 1);
@@ -215,7 +223,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `orders`
