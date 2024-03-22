@@ -80,45 +80,10 @@ if (isset ($_SESSION['username'])) {
         <main class="">
             <section class="featured-products">
                 <h2>Featured Products</h2>
-                <!-- <div class="row">
-                    <?php
-                    $stmt = $conn->query("SELECT * FROM products LIMIT 10"); // Fetch featured products
-                    while ($row = $stmt->fetch()) { ?>
-                        <div class="col-md-4 p-3">
-                            <div class="card">
-                                <img src="<?php
-                                $imagePath = $row['image_path'];
-
-                                // Check if the image path starts with "http"
-                                if (strpos($imagePath, 'http') === 0) {
-                                    // Image is from external URL, use as is
-                                    echo $finalImagePath = $imagePath;
-                                } else {
-                                    // Local image, prepend "images/"
-                                    echo $finalImagePath = 'images/' . $imagePath;
-                                }
-                                ?>" class="card-img-top" alt="...">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <?php echo $row['product_name']; ?>
-                                    </h5>
-                                    <p class="card-text">$
-                                        <?php echo $row['price']; ?>
-                                    </p>
-                                    <a href="product-details.php?id=<?php echo $row['product_id']; ?>"
-                                        class="btn btn-primary">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php } ?>
-                </div> -->
-
                 <div id="carousel" class="my-3 carousel slide w-50" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active" data-bs-interval="3000">
                             <div class="card">
-                                <!-- <img src="https://www.solidbackgrounds.com/images/1920x1080/1920x1080-white-solid-color-background.jpg"
-                                    class="card-img-top" alt="..."> -->
                                 <div class="text-center d-flex flex-column justify-content-center"
                                     style="height: 320px">
                                     <h1 style="font-size: 4rem">You want it?</h1>

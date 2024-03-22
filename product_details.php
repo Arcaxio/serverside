@@ -27,6 +27,16 @@ $product = $stmt->fetch();
 if (!$product) {
     echo "Error";
 }
+
+if (isset ($_GET['success'])) { ?>
+    <script>
+        window.onload = function () {
+            const toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
+            toast.show();
+        };
+    </script>
+<?php }
+
 ?>
 
 <!DOCTYPE html>
@@ -68,7 +78,7 @@ if (!$product) {
                     </span>
                 </li>
                 <li class="nav-item">
-                        <a class="nav-link fw-medium" href="products.php">Products</a>
+                    <a class="nav-link fw-medium" href="products.php">Products</a>
                 </li>
                 <?php if (isset ($_SESSION['username'])) { ?>
                     <li class="nav-item">
@@ -124,21 +134,35 @@ if (!$product) {
                             </h4>
                         </div>
                     </div>
-                    <div class="row pt-3">
-                        <div class="col-4">
-                            <div class="input-group h-100">
-                                <span class="input-group-text" id="quantity">Quantity</span>
-                                <input type="number" class="form-control" id="quantity" value="1">
+                    <form method="POST" action="add_to_cart.php">
+                        <div class="row pt-3">
+                            <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+                            <div class="col-4">
+                                <div class="input-group h-100">
+                                    <span class="input-group-text" id="quantity">Quantity</span>
+                                    <input type="number" class="form-control" name="quantity" min="1" value="1">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <button class="btn btn-primary btn-lg" type="submit">Add to Cart</button>
                             </div>
                         </div>
-                        <div class="col-8">
-                            <a class="btn btn-primary btn-lg">Add to Cart</a>
-                        </div>
-                    </div>
+                    </form>
 
                 </div>
             </div>
         </main>
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="addToCartToast" class="toast hide align-items-center text-bg-primary border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex justify-content-between align-items-center">
+                <h6 class="m-0 ms-2">Success! Product added to cart!</h6>
+                <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Close">
+                </button>
+            </div>
+        </div>
     </div>
 </body>
 

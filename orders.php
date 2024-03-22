@@ -62,8 +62,8 @@ if (isset ($_SESSION['username'])) {
         </nav>
     </header>
 
-    <div class="container mt-5">
-        <h2 class="mb-4">Your Orders</h2>
+    <div class="container mt-3">
+        <h2 class="mb-3">Your Orders</h2>
         <div class="row">
             <div class="col-md-8">
                 <div class="card mb-3">
