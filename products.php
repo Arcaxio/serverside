@@ -47,22 +47,29 @@ if (isset ($_SESSION['username'])) {
                 <span class="ms-2 fs-3">Boom Inc</span>
             </div>
             <ul class="nav justify-content-end gap-1">
-                <li class="nav-item">
-                    <a class="nav-link fw-medium" href="products.php">Products</a>
+                <li>
+                    <span class="nav-link text-light fw-medium">
+                        <?php if (isset ($username)) {
+                            echo "Welcome, " . $username . "!";
+                        } ?>
+                    </span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-medium" href="cart.php">Cart</a>
+                        <a class="nav-link fw-medium" href="products.php">Products</a>
                 </li>
                 <?php if (isset ($_SESSION['username'])) { ?>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="cart.php">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="orders.php">Order</a>
+                    </li>
                     <li class="nav-logging">
-                        <a class="nav-link fw-medium" href="logout.php">Logout</a>
+                        <a class="nav-link fw-medium" href="customer/logout.php">Logout</a>
                     </li>
                 <?php } else { ?>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="register.php">Register</a>
-                    </li>
                     <li class="nav-logging">
-                        <a class="nav-link fw-medium" href="login.php">Login</a>
+                        <a class="nav-link fw-medium" href="customer/login.php">Login</a>
                     </li>
                 <?php } ?>
             </ul>

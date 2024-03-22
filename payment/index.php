@@ -1,3 +1,38 @@
+<?php
+include '../includes/db_connect.php';
+session_start();
+
+// Protect the page
+if (!isset ($_SESSION['customer_id'])) {
+    header('Location: index.php');
+}
+
+$username = $_SESSION['username']; // Fetch the username
+
+// Query to retrieve selected order products from the cart
+$query = "SELECT p.product_name, p.price, c.quantity
+          FROM cart c
+          INNER JOIN products p ON c.product_id = p.product_id
+          WHERE c.user_id = :user_id";
+
+$stmt = $conn->prepare($query);
+$stmt->bindParam(':user_id', $_SESSION['customer_id']);
+$stmt->execute();
+$selected_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+// Query to fetch buyer information from the customer table
+$query = "SELECT * FROM customers WHERE customer_id = :customer_id";
+
+$stmt = $conn->prepare($query);
+$stmt->bindParam(':customer_id', $_SESSION['customer_id']);
+$stmt->execute();
+$buyer_info = $stmt->fetch(PDO::FETCH_ASSOC);
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -90,27 +125,27 @@
                         </div>
 
                         <!-- Buyer Information Form -->
-                        <h5 class="card-title">Buyer Information</h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="buyer_name">Name:</label>
-                                    <input type="text" class="form-control" id="buyer_name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="buyer_email">Email:</label>
-                                    <input type="email" class="form-control" id="buyer_email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="buyer_address">Address:</label>
-                                    <input type="text" class="form-control" id="buyer_address" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="buyer_phone">Phone:</label>
-                                    <input type="tel" class="form-control" id="buyer_phone" required>
-                                </div>
+                    <h5 class="card-title">Buyer Information</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="buyer_name">Name:</label>
+                                <input type="text" class="form-control" id="buyer_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="buyer_email">Email:</label>
+                                <input type="email" class="form-control" id="buyer_email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="buyer_address">Address:</label>
+                                <input type="text" class="form-control" id="buyer_address" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="buyer_phone">Phone:</label>
+                                <input type="tel" class="form-control" id="buyer_phone" required>
                             </div>
                         </div>
+                    </div>
 
 
                         </div>
@@ -204,35 +239,45 @@
 
 
     // JavaScript code for confirming payment
-    document.getElementById('confirm_payment').addEventListener('click', function() {
-        // Validate buyer information before submitting payment
-        const buyerName = document.getElementById('buyer_name').value;
-        const buyerEmail = document.getElementById('buyer_email').value;
-        const buyerAddress = document.getElementById('buyer_address').value;
-        const buyerPhone = document.getElementById('buyer_phone').value;
+document.getElementById('confirm_payment').addEventListener('click', function() {
+    // Validate buyer information before submitting payment
+    const buyerName = document.getElementById('buyer_name').value;
+    const buyerEmail = document.getElementById('buyer_email').value;
+    const buyerAddress = document.getElementById('buyer_address').value;
+    const buyerPhone = document.getElementById('buyer_phone').value;
+    const paymentMethod = document.getElementById('payment_method').value;
 
-        // Perform validation here (e.g., check if fields are not empty)
+    // Perform validation here (e.g., check if fields are not empty)
 
-        // If validation passes, proceed with payment submission
-        // Otherwise, display error messages to the user
+    // If validation passes, proceed with payment submission
+    // Otherwise, display error messages to the user
 
-        // Make an AJAX request to insert payment record
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'payment.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                console.log(xhr.responseText);
-                // Further actions after successful payment submission
+    // Make an AJAX request to insert payment record
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'payment.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            // Parse response from server
+            const response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                // Payment successful, redirect to receipt page
+                window.location.href = 'receipt.php?payment_id=' + response.payment_id;
             } else {
-                console.error('Error:', xhr.statusText);
+                // Payment failed, display error message
+                alert('Payment failed. Please try again.');
             }
-        };
-        xhr.onerror = function() {
-            console.error('Request failed');
-        };
-        xhr.send('buyer_name=' + buyerName + '&buyer_email=' + buyerEmail + '&buyer_address=' + buyerAddress + '&buyer_phone=' + buyerPhone);
-    });
+        } else {
+            console.error('Error:', xhr.statusText);
+        }
+    };
+    xhr.onerror = function() {
+        console.error('Request failed');
+    };
+    // Send data to server
+    xhr.send('buyer_name=' + buyerName + '&buyer_email=' + buyerEmail + '&buyer_address=' + buyerAddress + '&buyer_phone=' + buyerPhone + '&payment_method=' + paymentMethod);
+});
+
 
 </script>
 </body>
