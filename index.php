@@ -12,6 +12,18 @@ if (isset ($_SESSION['username'])) {
     // Handle the case when there is no 'username' in session (Optional)
     $username = null;  // Set a default, or perform other actions if needed
 }
+
+// Pop out message when payment successfully
+if (isset($_GET['success'])) {
+    ?>
+        <script>
+            window.onload = function () {
+                const toast = new bootstrap.Toast(document.getElementById('confirmPayment'));
+                toast.show();
+            };
+        </script>
+    <?php
+}
 ?>
 
 <!DOCTYPE html>
@@ -131,6 +143,18 @@ if (isset ($_SESSION['username'])) {
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- When payment is successfully and received by database -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="confirmPayment" class="toast hide align-items-center text-bg-primary border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex justify-content-between align-items-center">
+                <h6 class="m-0 ms-2">Payment successful! Visit the order page for details!</h6>
+                <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Close">
+                </button>
+            </div>
+        </div>
     </div>
 </body>
 

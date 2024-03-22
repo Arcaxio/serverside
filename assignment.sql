@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2024 at 07:22 AM
+-- Generation Time: Mar 22, 2024 at 09:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,6 +33,15 @@ CREATE TABLE `cart` (
   `user_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`cart_id`, `product_id`, `user_id`, `quantity`) VALUES
+(7, 6, 5, 1),
+(8, 11, 5, 1),
+(9, 12, 5, 1);
 
 -- --------------------------------------------------------
 
@@ -78,7 +87,22 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`customer_id`, `username`, `password`, `name`, `email`, `address`, `phone_number`, `zipcode`, `city`, `state`) VALUES
 (1, 'customer123', '$2y$10$/0uS4KyGj8uJS7aozeO9seWMGQKZkG8yorslPHC1I/av6GJIRbxdm', '', 'customer123@mail.com', '', '', '', '', ''),
-(2, 'customer321', '$2y$10$28dZT.mxwSHHrJB/OR8uxO67CywHqIRLpZtfo5lNclsiDvdHE0N1u', '', 'customer321@gmail.com', '', '', '', '', '');
+(2, 'customer321', '$2y$10$28dZT.mxwSHHrJB/OR8uxO67CywHqIRLpZtfo5lNclsiDvdHE0N1u', '', 'customer321@gmail.com', '', '', '', '', ''),
+(5, 'testing123', '$2y$10$k5.HqC.4ueEf/LqUXsUcmOyTVQ190xijrc5EUtw59pdTwW6x/ghcq', 'Connie Tang Ming Xin', 'testing123@hotmail.com', 'Lot 6135, Lorong Permata 11, Vista Perdana Phase 2, 98000 Miri, Sarawak', '01111248294', '', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ordered_items`
+--
+
+CREATE TABLE `ordered_items` (
+  `order_item_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -97,15 +121,16 @@ CREATE TABLE `orders` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order_items`
+-- Table structure for table `payment`
 --
 
-CREATE TABLE `order_items` (
-  `order_item_id` int(11) NOT NULL,
-  `order_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
+CREATE TABLE `payment` (
+  `payment_id` int(11) NOT NULL,
+  `cart_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL
+  `payment_datetime` date NOT NULL,
+  `total_payment_amount` int(50) NOT NULL,
+  `payment_method` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -164,7 +189,9 @@ INSERT INTO `staff` (`staff_id`, `username`, `password`, `role`) VALUES
 -- Indexes for table `cart`
 --
 ALTER TABLE `cart`
-  ADD PRIMARY KEY (`cart_id`);
+  ADD PRIMARY KEY (`cart_id`),
+  ADD KEY `cart_product_id` (`product_id`),
+  ADD KEY `cart_user_id` (`user_id`);
 
 --
 -- Indexes for table `categories`
@@ -179,16 +206,28 @@ ALTER TABLE `customers`
   ADD PRIMARY KEY (`customer_id`);
 
 --
+-- Indexes for table `ordered_items`
+--
+ALTER TABLE `ordered_items`
+  ADD PRIMARY KEY (`order_item_id`),
+  ADD KEY `ordered_payment_id` (`payment_id`),
+  ADD KEY `ordered_order_id` (`order_id`),
+  ADD KEY `ordered_user_id` (`user_id`),
+  ADD KEY `ordered_product_id` (`product_id`);
+
+--
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`);
 
 --
--- Indexes for table `order_items`
+-- Indexes for table `payment`
 --
-ALTER TABLE `order_items`
-  ADD PRIMARY KEY (`order_item_id`);
+ALTER TABLE `payment`
+  ADD PRIMARY KEY (`payment_id`),
+  ADD KEY `payment_cart_id` (`cart_id`),
+  ADD KEY `payment_user_id` (`user_id`);
 
 --
 -- Indexes for table `products`
@@ -211,7 +250,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -223,7 +262,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `ordered_items`
+--
+ALTER TABLE `ordered_items`
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -232,10 +277,10 @@ ALTER TABLE `orders`
   MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `order_items`
+-- AUTO_INCREMENT for table `payment`
 --
-ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `payment`
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=987186;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -248,6 +293,33 @@ ALTER TABLE `products`
 --
 ALTER TABLE `staff`
   MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `cart`
+--
+ALTER TABLE `cart`
+  ADD CONSTRAINT `cart_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
+  ADD CONSTRAINT `cart_user_id` FOREIGN KEY (`user_id`) REFERENCES `customers` (`customer_id`);
+
+--
+-- Constraints for table `ordered_items`
+--
+ALTER TABLE `ordered_items`
+  ADD CONSTRAINT `ordered_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
+  ADD CONSTRAINT `ordered_payment_id` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`payment_id`),
+  ADD CONSTRAINT `ordered_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
+  ADD CONSTRAINT `ordered_user_id` FOREIGN KEY (`user_id`) REFERENCES `payment` (`user_id`);
+
+--
+-- Constraints for table `payment`
+--
+ALTER TABLE `payment`
+  ADD CONSTRAINT `payment_cart_id` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`cart_id`),
+  ADD CONSTRAINT `payment_user_id` FOREIGN KEY (`user_id`) REFERENCES `cart` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
