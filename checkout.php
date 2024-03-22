@@ -19,8 +19,7 @@ if (isset ($_SESSION['username'])) {
 
 // Fetch cart items
 $cartItems = [];
-$subtotal = 0; // Initialize subtotal
-$salesTaxes = 0; // Initialize subtotal
+$subtotal = 0;
 
 if ($userId !== null) {
     $stmt = $conn->prepare("SELECT cart.cart_id, cart.product_id, cart.quantity, products.product_name, products.price 
@@ -34,7 +33,6 @@ if ($userId !== null) {
     // Calculate subtotal
     foreach ($cartItems as $item) {
         $subtotal += $item['price'] * $item['quantity'];
-        $salesTaxes = $subtotal * 0.06;
     }
 }
 
@@ -285,7 +283,7 @@ if (isset($_GET['success']) && $_GET['success'] == 'true') {
                                         </tr>
                                         <?php
                                         // Calculate sales taxes (6% of subtotal)
-                                        $salesTaxes = $subtotal * 0.06;
+                                        $salesTaxes = ($subtotal + 10.00) * 0.06;
                                         ?>
                                         <tr>
                                             <td>Sales Taxes (6%) (RM):</td>
