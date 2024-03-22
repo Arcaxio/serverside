@@ -1,1 +1,0 @@
-<!-- Receipt of payment made successfully -->
