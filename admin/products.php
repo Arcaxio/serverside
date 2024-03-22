@@ -111,7 +111,7 @@ function getProduct($conn, $id)
         </div>
         <div class="col-10 p-0 bg-body-secondary">
             <div class="d-flex justify-content-between align-items-center">
-                <div class="fw-medium fs-4 p-3 mx-3">
+                <div class="fw-medium fs-3 p-3 mx-3">
                     Product Management
                 </div>
                 <div class="px-4 d-flex align-items-center">
@@ -129,7 +129,7 @@ function getProduct($conn, $id)
 
                     <div class="row">
                         <div class="col-6 justify-content-around">
-                            <h3 class="mb-2">Add Product</h3>
+                            <h4 class="mb-2">Add Product</h4>
                             <form method="post">
                                 <input type="hidden" name="product_id"
                                     value="<?php echo isset ($product) ? $product['product_id'] : ''; ?>">
@@ -168,7 +168,7 @@ function getProduct($conn, $id)
                         </div>
 
                         <div class="col-6">
-                            <h3 class="mb-3">Products</h3>
+                            <h4 class="mb-3">Products</h4>
                             <table class="table border">
                                 <thead>
                                     <tr>

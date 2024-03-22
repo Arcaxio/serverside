@@ -9,7 +9,16 @@ include 'includes/db_connect.php'; // Include database connection
     <title>Online Order Management System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
     <style>
+        body {
+            overflow: unset;
+        }
+
         img {
             height: 320px;
             width: 320px;
@@ -19,19 +28,38 @@ include 'includes/db_connect.php'; // Include database connection
 </head>
 
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>Welcome to Our Store</h1>
-        </header>
+    <header class="header sticky-top py-3 bg-black">
+        <nav class="container d-flex justify-content-between align-items-center">
+            <div class="text-light" onclick="location.href='index.php';" style="cursor: pointer;">
+                <i class="bi bi-app-indicator fs-3 me-3"></i>
+                <span class="ms-2 fs-3">Boom Inc</span>
+            </div>
+            <ul class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link text-light fw-medium" href="products.php">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light fw-medium" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light fw-medium" href="#">Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light fw-medium" href="#">Login</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-        <main>
+    <div class="container p-3">
+        <main class="">
             <section class="featured-products">
                 <h2>Featured Products</h2>
-                <div class="row">
+                <!-- <div class="row">
                     <?php
-                    $stmt = $conn->query("SELECT * FROM products LIMIT 4"); // Fetch featured products
+                    $stmt = $conn->query("SELECT * FROM products LIMIT 10"); // Fetch featured products
                     while ($row = $stmt->fetch()) { ?>
-                        <div class="col-md-3">
+                        <div class="col-md-4 p-3">
                             <div class="card">
                                 <img src="<?php
                                 $imagePath = $row['image_path'];
@@ -58,20 +86,78 @@ include 'includes/db_connect.php'; // Include database connection
                             </div>
                         </div>
                     <?php } ?>
+                </div> -->
+
+                <div id="carousel" class="my-3 carousel slide w-50" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active" data-bs-interval="3000">
+                            <div class="card">
+                                <!-- <img src="https://www.solidbackgrounds.com/images/1920x1080/1920x1080-white-solid-color-background.jpg"
+                                    class="card-img-top" alt="..."> -->
+                                <div class="text-center d-flex flex-column justify-content-center"
+                                    style="height: 320px">
+                                    <h1 style="font-size: 4rem">You want it?</h1>
+                                    <h1 style="font-size: 5rem">We have it!</h1>
+                                </div>
+                                <div class="card-body" style="height: 141.6px">
+                                    <h1 class="card-title text-center">
+                                        Have a look
+                                        <i class="bi bi-arrow-right ms-3"></i>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                        $stmt = $conn->query("SELECT * FROM products LIMIT 10"); // Fetch featured products
+                        while ($row = $stmt->fetch()) { ?>
+                            <div class="carousel-item" data-bs-interval="3000">
+                                <div class="card">
+                                    <img src="<?php
+                                    $imagePath = $row['image_path'];
+
+                                    // Check if the image path starts with "http"
+                                    if (strpos($imagePath, 'http') === 0) {
+                                        // Image is from external URL, use as is
+                                        echo $finalImagePath = $imagePath;
+                                    } else {
+                                        // Local image, prepend "images/"
+                                        echo $finalImagePath = 'images/' . $imagePath;
+                                    }
+                                    ?>" class="card-img-top" alt="...">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <?php echo $row['product_name']; ?>
+                                        </h5>
+                                        <p class="card-text">$
+                                            <?php echo $row['price']; ?>
+                                        </p>
+                                        <a href="product-details.php?id=<?php echo $row['product_id']; ?>"
+                                            class="btn btn-primary">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
+                    </div>
                 </div>
             </section>
-            <?php
-            ?>
         </main>
-
-        <footer>
-        </footer>
-
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-
 </body>
+
+<footer class="bg-body-secondary">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-6">
+                © 2024 Boom Inc. All rights reserved
+            </div>
+            <div class="col-6 d-flex justify-content-end">
+                <i class="bi bi-facebook fs-3 px-3"></i>
+                <i class="bi bi-twitter fs-3 px-3"></i>
+                <i class="bi bi-instagram fs-3 px-3"></i>
+                <i class="bi bi-whatsapp fs-3 px-3"></i>
+            </div>
+        </div>
+    </div>
+</footer>
 
 </html>

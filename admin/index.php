@@ -6,8 +6,8 @@
 
     <style>
         body {
-            background: rgb(5, 0, 100);
-            background: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(30, 30, 30, 1) 100%);
+            background: radial-gradient(111% 111% at 74.29% -11%, #A93300 0%, #005570 100%), linear-gradient(127.43deg, #00D5C8 0%, #2200AA 100%);
+            background-blend-mode: difference, normal;
             height: 100vh;
             margin: 0;
             display: flex;

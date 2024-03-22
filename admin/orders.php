@@ -51,8 +51,8 @@ $username = $_SESSION['username'];
         </div>
         <div class="col-10 p-0 bg-body-secondary">
             <div class="d-flex justify-content-between align-items-center">
-                <div class="fw-medium fs-4 p-3 mx-3">
-                    Recent Orders
+                <div class="fw-medium fs-3 p-3 mx-3">
+                    Order Management
                 </div>
                 <div class="px-4 d-flex align-items-center">
                     <span class="fs-6 fw-medium pe-4">Welcome,
@@ -65,7 +65,7 @@ $username = $_SESSION['username'];
             </div>
 
             <div class="bg-white p-4">
-                <div class="px-2 border rounded rounded-3">
+                <div class="px-3 py-1 border rounded rounded-3">
                     <table class="table">
                         <thead>
                             <tr>
@@ -77,41 +77,9 @@ $username = $_SESSION['username'];
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
+                
                         <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>@mdo</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Jacob</td>
-                                <td>Thornton</td>
-                                <td>@fat</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td colspan="2">Larry the Bird</td>
-                                <td>@twitter</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>@mdo</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Jacob</td>
-                                <td>Thornton</td>
-                                <td>@fat</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td colspan="2">Larry the Bird</td>
-                                <td>@twitter</td>
-                            </tr>
+                            
                         </tbody>
                     </table>
                 </div>
