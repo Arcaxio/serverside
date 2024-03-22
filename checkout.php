@@ -1,6 +1,13 @@
 <?php
 include 'includes/db_connect.php';
 session_start();
+
+if (isset ($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+} else {
+    // Handle the case when there is no 'username' in session (Optional)
+    $username = null;  // Set a default, or perform other actions if needed
+}
 ?>
 
 <!DOCTYPE html>
