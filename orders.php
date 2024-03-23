@@ -19,6 +19,7 @@ if (isset ($_SESSION['username'])) {
 
 // Fetch cart items
 $orders = [];
+$total = 0;
 if ($userId !== null) {
     $order_stmt = $conn->prepare("SELECT orders.order_id, orders.order_date,orders.order_status, orders.total_amount, ordered_items.item_quantity, products.product_name, products.price, products.image_path 
                             FROM orders 
@@ -124,6 +125,7 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
             <div class="col-md-8">
             <?php
             foreach ($orders as $order){
+                $total=0;
                 ?>
                 <div class="card mb-3">
                     <div class="card-body">
@@ -134,13 +136,14 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
                         
                         
                         <p class="card-text">Date: <?php echo $order['order_date']?></p>
+                        <p class="card-text">Status: <?php echo $order['order_status']?> </p>
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th scope="col">Product</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Quantity</th>
-                                    <th scope="col">Total</th>
+                                    <th class="text-end" scope="col">Price</th>
+                                    <th class="text-end" scope="col">Quantity</th>
+                                    <th class="text-end" scope="col">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -148,15 +151,31 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
                                 foreach($order['products'] as $product){?>
                                 <tr>
                                     <td><?php echo $product['product_name']?></td>
-                                    <td><?php echo $product['price']?></td>
-                                    <td><?php echo $product['item_quantity']?></td>
-                                    <td>$100</td>
+                                    <td class="text-end">$<?php echo $product['price']?></td>
+                                    <td class="text-end"><?php echo $product['item_quantity']?></td>
+                                    <td class="text-end">$<?php echo ($product['price']*$product['item_quantity'])?></td>
                                 </tr>
-                                <?php }?>
-                                
+                                <?php $total+= $product['price']*$product['item_quantity'];}?>
+                                <tr>
+                                    <td>sheeping Fee:</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-end">$10</td>
+                                </tr>
+
+                                <tr><td>Sales Taxes (6%):</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-end">$<?php echo ($total+10)*0.06?></td></tr>
+
+                                    <tr><th>Total: </th>
+                                    <td></td>
+                                    <td></td>
+                                    <th class="text-end">$<?php echo $order['total_amount']?></th></tr>
                             </tbody>
                         </table>
-                        <p class="card-text">Total: $205</p>
+                        <button type="button" class="btn btn-primary">Cancel order</button>
+                        
                     </div>
                 </div>
                 <?php } ?>
