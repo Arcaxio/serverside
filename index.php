@@ -14,14 +14,14 @@ if (isset ($_SESSION['username'])) {
 }
 
 // Pop out message when payment successfully
-if (isset($_GET['success'])) {
+if (isset ($_GET['success'])) {
     ?>
-        <script>
-            window.onload = function () {
-                const toast = new bootstrap.Toast(document.getElementById('confirmPayment'));
-                toast.show();
-            };
-        </script>
+    <script>
+        window.onload = function () {
+            const toast = new bootstrap.Toast(document.getElementById('confirmPayment'));
+            toast.show();
+        };
+    </script>
     <?php
 }
 ?>
@@ -46,7 +46,24 @@ if (isset($_GET['success'])) {
         img {
             height: 320px;
             width: 320px;
-            object-fit: cover;
+            object-fit: scale-down;
+        }
+
+        img.secondary {
+            height: 90px;
+            width: 90px;
+        }
+
+        .carousel-control-next,
+        .carousel-control-prev {
+            filter: invert(100%);
+        }
+
+        .choose-us {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
@@ -67,7 +84,7 @@ if (isset($_GET['success'])) {
                     </span>
                 </li>
                 <li class="nav-item">
-                        <a class="nav-link fw-medium" href="products.php">Products</a>
+                    <a class="nav-link fw-medium" href="products.php">Products</a>
                 </li>
                 <?php if (isset ($_SESSION['username'])) { ?>
                     <li class="nav-item">
@@ -88,61 +105,104 @@ if (isset($_GET['success'])) {
         </nav>
     </header>
 
-    <div class="container p-3">
-        <main class="">
-            <section class="featured-products">
-                <h2>Featured Products</h2>
-                <div id="carousel" class="my-3 carousel slide w-50" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active" data-bs-interval="3000">
-                            <div class="card">
-                                <div class="text-center d-flex flex-column justify-content-center"
-                                    style="height: 320px">
-                                    <h1 style="font-size: 4rem">You want it?</h1>
-                                    <h1 style="font-size: 5rem">We have it!</h1>
-                                </div>
-                                <div class="card-body" style="height: 141.6px">
-                                    <h1 class="card-title text-center">
-                                        Have a look
-                                        <i class="bi bi-arrow-right ms-3"></i>
-                                    </h1>
-                                </div>
-                            </div>
-                        </div>
-                        <?php
-                        $stmt = $conn->query("SELECT * FROM products LIMIT 10"); // Fetch featured products
-                        while ($row = $stmt->fetch()) { ?>
-                            <div class="carousel-item" data-bs-interval="3000">
-                                <div class="card">
-                                    <img src="<?php
-                                    $imagePath = $row['image_path'];
+    <div class="container px-3">
+        <section class="featured-products">
+            <div class="row">
+                <div class="col-6 p-3 d-flex flex-column align-items-center justify-content-center">
 
-                                    // Check if the image path starts with "http"
-                                    if (strpos($imagePath, 'http') === 0) {
-                                        // Image is from external URL, use as is
-                                        echo $finalImagePath = $imagePath;
-                                    } else {
-                                        // Local image, prepend "images/"
-                                        echo $finalImagePath = 'images/' . $imagePath;
-                                    }
-                                    ?>" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <h5 class="card-title">
-                                            <?php echo $row['product_name']; ?>
-                                        </h5>
-                                        <p class="card-text">$
-                                            <?php echo $row['price']; ?>
-                                        </p>
-                                        <a href="product_details.php?id=<?php echo $row['product_id']; ?>"
-                                            class="btn btn-primary">View Details</a>
+                    <h1 class="p-4 mb-4">Prices? Let it BOOM!</h1>
+                    <h4>Want to buy electronics but no matter where you look, it's always too expensive?</h4>
+                    <h4>Don't worry, we got your back! Here at Boom Inc, we offer the most competitive pricing!</h4>
+
+                </div>
+                <div class="col-6">
+                    <div id="carousel" class="my-3 carousel slide w-100" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active" data-bs-interval="3000">
+                                <div class="card">
+                                    <div class="text-center d-flex flex-column justify-content-center"
+                                        style="height: 320px">
+                                        <h1 style="font-size: 4rem">You want it?</h1>
+                                        <h1 style="font-size: 5rem">We have it!</h1>
+                                    </div>
+                                    <div class="card-body" style="height: 141.6px">
+                                        <h1 class="card-title text-center">
+                                            Have a look
+                                            <i class="bi bi-arrow-right ms-3"></i>
+                                        </h1>
                                     </div>
                                 </div>
                             </div>
-                        <?php } ?>
+                            <?php
+                            $stmt = $conn->query("SELECT * FROM products LIMIT 10"); // Fetch featured products
+                            while ($row = $stmt->fetch()) { ?>
+                                <div class="carousel-item" data-bs-interval="3000">
+                                    <div class="card">
+                                        <img src="<?php
+                                        $imagePath = $row['image_path'];
+
+                                        // Check if the image path starts with "http"
+                                        if (strpos($imagePath, 'http') === 0) {
+                                            // Image is from external URL, use as is
+                                            echo $finalImagePath = $imagePath;
+                                        } else {
+                                            // Local image, prepend "images/"
+                                            echo $finalImagePath = 'images/' . $imagePath;
+                                        }
+                                        ?>" class="card-img-top" alt="...">
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <?php echo $row['product_name']; ?>
+                                            </h5>
+                                            <p class="card-text">$
+                                                <?php echo $row['price']; ?>
+                                            </p>
+                                            <a href="product_details.php?id=<?php echo $row['product_id']; ?>"
+                                                class="btn btn-primary">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php } ?>
+                        </div>
+                        <button class="carousel-control-prev text-primary" type="button" data-bs-target="#carousel"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carousel"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+        </section>
+    </div>
+    <div class="bg-secondary-subtle text-secondary-emphasis text-center">
+        <h3 class="py-4 m-0">Why choose us?</h3>
+        <div class="row px-5 pb-3">
+            <div class="col-4 px-3 choose-us">
+                <img src="images/fast.png" class="secondary">
+                <h5 class="text-center mt-3">
+                    We offer a competitive shipping fee, you can't find this anywhere else!
+                </h5>
+            </div>
+
+            <div class="col-4 px-3 choose-us">
+                <img src="images/medal.png" class="secondary">
+                <h5 class="text-center mt-3">
+                    All our products are genuine and authentic! Quality assured!
+                </h5>
+            </div>
+
+            <div class="col-4 px-3 choose-us">
+                <img src="images/easy-return_128.png" class="secondary">
+                <h5 class="text-center mt-3">
+                    Still having doubts? No problem! We offer 30 day free returns!
+                </h5>
+            </div>
+        </div>
     </div>
 
     <!-- When payment is successfully and received by database -->
