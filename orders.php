@@ -20,7 +20,7 @@ if (isset ($_SESSION['username'])) {
 // Fetch cart items
 $orders = [];
 if ($userId !== null) {
-    $order_stmt = $conn->prepare("SELECT orders.order_id, orders.order_date,orders.order_status, ordered_items.item_quantity, products.product_name, products.price, products.image_path 
+    $order_stmt = $conn->prepare("SELECT orders.order_id, orders.order_date,orders.order_status, orders.total_amount, ordered_items.item_quantity, products.product_name, products.price, products.image_path 
                             FROM orders 
                             JOIN ordered_items ON orders.order_id = ordered_items.order_id 
                             JOIN products ON 
@@ -40,9 +40,12 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
     foreach ($results as $result) {
         $orderId = $result['order_id'];
         if (!isset($orders[$orderId])) {
+            $date = new DateTime($result['order_date']);
+            $formattedDate = $date->format('F j, Y');
             $orders[$orderId] = [
                 'order_id' => $orderId,
-                'order_date' => $result['order_date'],
+                'order_date' => $formattedDate,
+                'total_amount' => $result['total_amount'],
                 'order_status' => $result['order_status'],
                 'products' => []
             ];
@@ -119,10 +122,18 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
         <h2 class="mb-3">Your Orders</h2>
         <div class="row">
             <div class="col-md-8">
+            <?php
+            foreach ($orders as $order){
+                ?>
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Order #123456</h5>
-                        <p class="card-text">Date: January 1, 2024</p>
+                        
+                        
+                        <h5 class="card-title">Order # <?php echo $order['order_id'];?></h5>
+                        
+                        
+                        
+                        <p class="card-text">Date: <?php echo $order['order_date']?></p>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -133,29 +144,22 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php 
+                                foreach($order['products'] as $product){?>
                                 <tr>
-                                    <td>Product 1</td>
-                                    <td>$50</td>
-                                    <td>2</td>
+                                    <td><?php echo $product['product_name']?></td>
+                                    <td><?php echo $product['price']?></td>
+                                    <td><?php echo $product['item_quantity']?></td>
                                     <td>$100</td>
                                 </tr>
-                                <tr>
-                                    <td>Product 2</td>
-                                    <td>$30</td>
-                                    <td>1</td>
-                                    <td>$30</td>
-                                </tr>
-                                <tr>
-                                    <td>Product 3</td>
-                                    <td>$25</td>
-                                    <td>3</td>
-                                    <td>$75</td>
-                                </tr>
+                                <?php }?>
+                                
                             </tbody>
                         </table>
                         <p class="card-text">Total: $205</p>
                     </div>
                 </div>
+                <?php } ?>
             </div>
         </div>
     </div>
