@@ -12,13 +12,13 @@ if (isset ($_POST['product_id']) && isset ($_POST['quantity'])) {
         $username = $_SESSION['username'];
 
         // Fetch customer_id 
-        $stmt = $conn->prepare("SELECT customer_id FROM customers WHERE username = ?");
+        $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ?");
         $stmt->bindParam(1, $username);
         $stmt->execute();
 
         if ($stmt->rowCount() === 1) {
             $row = $stmt->fetch();
-            $userId = $row['customer_id'];
+            $userId = $row['user_id'];
         } else {
             // Handle the case where a customer is not found with this username 
             // (this might indicate an error or data inconsistency)

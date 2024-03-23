@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Passwords do not match.";
     } else {
         // Prepare a SQL statement
-        $stmt = $conn->prepare("INSERT INTO customers (username, email, password) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
         // Hash the password before storing
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $stmt->bindParam(1, $username);
