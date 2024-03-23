@@ -65,6 +65,11 @@ if (isset ($_GET['success'])) {
             justify-content: center;
             align-items: center;
         }
+
+        .custom-card {
+            background: linear-gradient(90deg, rgba(0,147,255,1) 0%, rgba(137,25,255,1) 100%);
+            color: white;
+        }
     </style>
 </head>
 
@@ -205,6 +210,35 @@ if (isset ($_GET['success'])) {
         </div>
     </div>
 
+    <div class="container p-3">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="https://c1.neweggimages.com/WebResource/Themes/Nest/bgs/Illus_Subscription@4x.png"
+                                    class="img-fluid" alt="Deals illustration">
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="card-title">Deals Just For You</h5>
+                                <p class="card-text">Sign up to receive exclusive offers in your inbox.</p>
+                                <form target="" name="Newsletter">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="Enter your e-mail address"
+                                            aria-label="Enter your e-mail address" name="LoginName" value=""
+                                            maxlength="128">
+                                        <button type="button" class="btn btn-primary">Sign Up</button>
+                                    </div>
+                                    <input type="hidden" value="1" name="Subscribe">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- When payment is successfully and received by database -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div id="confirmPayment" class="toast hide align-items-center text-bg-primary border-0" role="alert"
