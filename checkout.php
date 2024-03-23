@@ -20,6 +20,7 @@ if (isset ($_SESSION['username'])) {
 // Fetch cart items
 $cartItems = [];
 $subtotal = 0;
+$salesTaxes = 0;
 
 if ($userId !== null) {
     $stmt = $conn->prepare("SELECT cart.cart_id, cart.product_id, cart.quantity, products.product_name, products.price 

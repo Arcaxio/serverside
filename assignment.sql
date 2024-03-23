@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2024 at 09:34 PM
+-- Generation Time: Mar 23, 2024 at 04:42 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,15 +33,6 @@ CREATE TABLE `cart` (
   `user_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `cart`
---
-
-INSERT INTO `cart` (`cart_id`, `product_id`, `user_id`, `quantity`) VALUES
-(7, 6, 5, 1),
-(8, 11, 5, 1),
-(9, 12, 5, 1);
 
 -- --------------------------------------------------------
 
@@ -126,12 +117,21 @@ CREATE TABLE `orders` (
 
 CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
-  `cart_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `payment_datetime` date NOT NULL,
   `total_payment_amount` int(50) NOT NULL,
   `payment_method` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `product_id`, `user_id`, `payment_datetime`, `total_payment_amount`, `payment_method`) VALUES
+(183203, 11, 5, '2024-03-23', 160, 'Debit/Credit Card'),
+(427547, 11, 5, '2024-03-23', 160, 'Debit/Credit Card'),
+(919262, 6, 5, '2024-03-23', 1460, 'Debit/Credit Card');
 
 -- --------------------------------------------------------
 
@@ -226,8 +226,8 @@ ALTER TABLE `orders`
 --
 ALTER TABLE `payment`
   ADD PRIMARY KEY (`payment_id`),
-  ADD KEY `payment_cart_id` (`cart_id`),
-  ADD KEY `payment_user_id` (`user_id`);
+  ADD KEY `payment_user_id` (`user_id`),
+  ADD KEY `payment_product_id` (`product_id`);
 
 --
 -- Indexes for table `products`
@@ -250,7 +250,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -318,8 +318,8 @@ ALTER TABLE `ordered_items`
 -- Constraints for table `payment`
 --
 ALTER TABLE `payment`
-  ADD CONSTRAINT `payment_cart_id` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`cart_id`),
-  ADD CONSTRAINT `payment_user_id` FOREIGN KEY (`user_id`) REFERENCES `cart` (`user_id`);
+  ADD CONSTRAINT `payment_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
+  ADD CONSTRAINT `payment_user_id` FOREIGN KEY (`user_id`) REFERENCES `customers` (`customer_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
