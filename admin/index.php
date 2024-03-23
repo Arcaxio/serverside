@@ -18,6 +18,13 @@
         h2 {
             font-size: 5rem;
         }
+
+        .card {
+            background: rgba(255, 255, 255, 0.45);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
     </style>
 </head>
 

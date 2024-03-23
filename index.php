@@ -67,8 +67,70 @@ if (isset ($_GET['success'])) {
         }
 
         .custom-card {
-            background: linear-gradient(90deg, rgba(0,147,255,1) 0%, rgba(137,25,255,1) 100%);
+            background: linear-gradient(90deg, rgba(0, 147, 255, 1) 0%, rgba(137, 25, 255, 1) 100%);
             color: white;
+            border-radius: 0px;
+        }
+
+        .custom-pattern {
+            background:
+                linear-gradient(-45deg, #0000 1.3%, #FFFFFF 0 32%, #0000 0),
+                linear-gradient(45deg, #0000 48%, #F2F2F2 0 52%, #0000 0),
+                linear-gradient(45deg, #0000 1.3%, #FFFFFF 0 32%, #0000 0) calc(53px/2) calc(53px/2),
+                linear-gradient(-45deg, #0000 48%, #F2F2F2 0 52%, #0000 0) #FFFFFF;
+            background-size: calc(2*53px) 53px, 53px 53px;
+        }
+
+        @keyframes slide {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        .logos {
+            overflow: hidden;
+            padding: 60px 0;
+            background: white;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .logos:before,
+        .logos:after {
+            position: absolute;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            content: "";
+            z-index: 2;
+        }
+
+        .logos:before {
+            left: 0;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0), white);
+        }
+
+        .logos:after {
+            right: 0;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0), white);
+        }
+
+        .logos:hover .logos-slide {
+            animation-play-state: paused;
+        }
+
+        .logos-slide {
+            display: inline-block;
+            animation: 35s slide infinite linear;
+        }
+
+        .logos-slide img {
+            height: 80px;
+            margin: 0 40px;
         }
     </style>
 </head>
@@ -109,82 +171,83 @@ if (isset ($_GET['success'])) {
             </ul>
         </nav>
     </header>
+    <div class="custom-pattern">
+        <div class="container px-3">
+            <section class="featured-products">
+                <div class="row">
+                    <div class="col-6 p-3 d-flex flex-column align-items-center justify-content-center">
 
-    <div class="container px-3">
-        <section class="featured-products">
-            <div class="row">
-                <div class="col-6 p-3 d-flex flex-column align-items-center justify-content-center">
+                        <h1 class="p-4 mb-4">Prices? Let it BOOM!</h1>
+                        <h4>Want to buy electronics but no matter where you look, it's always too expensive?</h4>
+                        <h4>Don't worry, we got your back! Here at Boom Inc, we offer the most competitive pricing!</h4>
 
-                    <h1 class="p-4 mb-4">Prices? Let it BOOM!</h1>
-                    <h4>Want to buy electronics but no matter where you look, it's always too expensive?</h4>
-                    <h4>Don't worry, we got your back! Here at Boom Inc, we offer the most competitive pricing!</h4>
-
-                </div>
-                <div class="col-6">
-                    <div id="carousel" class="my-3 carousel slide w-100" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active" data-bs-interval="3000">
-                                <div class="card">
-                                    <div class="text-center d-flex flex-column justify-content-center"
-                                        style="height: 320px">
-                                        <h1 style="font-size: 4rem">You want it?</h1>
-                                        <h1 style="font-size: 5rem">We have it!</h1>
-                                    </div>
-                                    <div class="card-body" style="height: 141.6px">
-                                        <h1 class="card-title text-center">
-                                            Have a look
-                                            <i class="bi bi-arrow-right ms-3"></i>
-                                        </h1>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php
-                            $stmt = $conn->query("SELECT * FROM products LIMIT 10"); // Fetch featured products
-                            while ($row = $stmt->fetch()) { ?>
-                                <div class="carousel-item" data-bs-interval="3000">
+                    </div>
+                    <div class="col-6">
+                        <div id="carousel" class="my-3 carousel slide w-100" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active" data-bs-interval="3000">
                                     <div class="card">
-                                        <img src="<?php
-                                        $imagePath = $row['image_path'];
-
-                                        // Check if the image path starts with "http"
-                                        if (strpos($imagePath, 'http') === 0) {
-                                            // Image is from external URL, use as is
-                                            echo $finalImagePath = $imagePath;
-                                        } else {
-                                            // Local image, prepend "images/"
-                                            echo $finalImagePath = 'images/' . $imagePath;
-                                        }
-                                        ?>" class="card-img-top" alt="...">
-                                        <div class="card-body">
-                                            <h5 class="card-title">
-                                                <?php echo $row['product_name']; ?>
-                                            </h5>
-                                            <p class="card-text">$
-                                                <?php echo $row['price']; ?>
-                                            </p>
-                                            <a href="product_details.php?id=<?php echo $row['product_id']; ?>"
-                                                class="btn btn-primary">View Details</a>
+                                        <div class="text-center d-flex flex-column justify-content-center"
+                                            style="height: 320px">
+                                            <h1 style="font-size: 4rem">You want it?</h1>
+                                            <h1 style="font-size: 5rem">We have it!</h1>
+                                        </div>
+                                        <div class="card-body" style="height: 141.6px">
+                                            <h1 class="card-title text-center">
+                                                Have a look
+                                                <i class="bi bi-arrow-right ms-3"></i>
+                                            </h1>
                                         </div>
                                     </div>
                                 </div>
-                            <?php } ?>
+                                <?php
+                                $stmt = $conn->query("SELECT * FROM products LIMIT 10"); // Fetch featured products
+                                while ($row = $stmt->fetch()) { ?>
+                                    <div class="carousel-item" data-bs-interval="3000">
+                                        <div class="card">
+                                            <img src="<?php
+                                            $imagePath = $row['image_path'];
+
+                                            // Check if the image path starts with "http"
+                                            if (strpos($imagePath, 'http') === 0) {
+                                                // Image is from external URL, use as is
+                                                echo $finalImagePath = $imagePath;
+                                            } else {
+                                                // Local image, prepend "images/"
+                                                echo $finalImagePath = 'images/' . $imagePath;
+                                            }
+                                            ?>" class="card-img-top" alt="...">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <?php echo $row['product_name']; ?>
+                                                </h5>
+                                                <p class="card-text">$
+                                                    <?php echo $row['price']; ?>
+                                                </p>
+                                                <a href="product_details.php?id=<?php echo $row['product_id']; ?>"
+                                                    class="btn btn-primary">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                            <button class="carousel-control-prev text-primary" type="button" data-bs-target="#carousel"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carousel"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
                         </div>
-                        <button class="carousel-control-prev text-primary" type="button" data-bs-target="#carousel"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carousel"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
-    <div class="bg-secondary-subtle text-secondary-emphasis text-center">
+    <div class="bg-body-secondary text-center">
         <h3 class="py-4 m-0">Why choose us?</h3>
         <div class="row px-5 pb-3">
             <div class="col-4 px-3 choose-us">
@@ -210,9 +273,9 @@ if (isset ($_GET['success'])) {
         </div>
     </div>
 
-    <div class="container p-3">
+    <div>
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-6">
                 <div class="card custom-card">
                     <div class="card-body">
                         <div class="row">
@@ -221,10 +284,10 @@ if (isset ($_GET['success'])) {
                                     class="img-fluid" alt="Deals illustration">
                             </div>
                             <div class="col-md-6">
-                                <h5 class="card-title">Deals Just For You</h5>
-                                <p class="card-text">Sign up to receive exclusive offers in your inbox.</p>
+                                <h5 class="card-title py-2">Deals Just For You!</h5>
+                                <p class="card-text py-2">Sign up to receive exclusive offers!</p>
                                 <form target="" name="Newsletter">
-                                    <div class="input-group mb-3">
+                                    <div class="input-group pe-5 py-2">
                                         <input type="text" class="form-control" placeholder="Enter your e-mail address"
                                             aria-label="Enter your e-mail address" name="LoginName" value=""
                                             maxlength="128">
@@ -237,8 +300,24 @@ if (isset ($_GET['success'])) {
                     </div>
                 </div>
             </div>
+            <div class="col-6">
+                <div class="logos">
+                    <div class="logos-slide">
+                        <img src="images/acer.svg" />
+                        <img src="images/anker.svg" />
+                        <img src="images/apple.svg" />
+                        <img src="images/asus.svg" />
+                        <img src="images/gigabyte.svg" />
+                        <img src="images/lenovo.svg" />
+                        <img src="images/microsoft.svg" />
+                        <img src="images/rog.svg" />
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+
     <!-- When payment is successfully and received by database -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div id="confirmPayment" class="toast hide align-items-center text-bg-primary border-0" role="alert"
@@ -250,6 +329,12 @@ if (isset ($_GET['success'])) {
             </div>
         </div>
     </div>
+
+    <!-- Script for logo carousel -->
+    <script>
+        var copy = document.querySelector(".logos-slide").cloneNode(true);
+        document.querySelector(".logos").appendChild(copy);
+    </script>
 </body>
 
 <footer class="bg-body-secondary">
