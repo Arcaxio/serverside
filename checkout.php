@@ -75,12 +75,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
         // Insert payment details into payment table
         $paymentMethod = $_POST['payment_method']; // Assuming payment method is selected in the form
         // Fetch the cart_id associated with the user
-        $cartId = isset($cartItems[0]['cart_id']) ? $cartItems[0]['cart_id'] : null;
-        if ($cartId) {
+        $productId = isset($cartItems[0]['product_id']) ? $cartItems[0]['product_id'] : null;
+        if ($productId) {
             // Assuming $subtotal holds the correct subtotal value
-            $stmt = $conn->prepare("INSERT INTO payment (payment_id, cart_id, user_id, payment_datetime, payment_method, total_payment_amount) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO payment (payment_id, product_id, user_id, payment_datetime, payment_method, total_payment_amount) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bindParam(1, $paymentId);
-            $stmt->bindParam(2, $cartId);
+            $stmt->bindParam(2, $productId);
             $stmt->bindParam(3, $userId);
             $stmt->bindParam(4, $paymentDatetime);
             $stmt->bindParam(5, $paymentMethod);
