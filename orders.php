@@ -4,10 +4,63 @@ session_start();
 
 if (isset ($_SESSION['username'])) {
     $username = $_SESSION['username'];
+    $username = $_SESSION['username'];
+    $stmt = $conn->prepare("SELECT customer_id FROM customers WHERE username = ?");
+    $stmt->bindParam(1, $username);
+    $stmt->execute();
+
+    if ($stmt->rowCount() === 1) {
+        $userId = $stmt->fetch()['customer_id'];
+    }
 } else {
     // Handle the case when there is no 'username' in session (Optional)
     $username = null;  // Set a default, or perform other actions if needed
 }
+
+// Fetch cart items
+$orders = [];
+if ($userId !== null) {
+    $order_stmt = $conn->prepare("SELECT orders.order_id, orders.order_date,orders.order_status, ordered_items.item_quantity, products.product_name, products.price, products.image_path 
+                            FROM orders 
+                            JOIN ordered_items ON orders.order_id = ordered_items.order_id 
+                            JOIN products ON 
+                            ordered_items.product_id = products.product_id
+                            WHERE orders.customer_id = ?");
+    $order_stmt->bindParam(1, $userId);
+
+} else {
+    // Handle guest cart (optional, you might use a session-based cart) 
+}
+
+if ($order_stmt) { // Only attempt execution if the statement was prepared
+    $order_stmt->execute();
+    $results = $order_stmt->fetchAll();
+
+
+    foreach ($results as $result) {
+        $orderId = $result['order_id'];
+        if (!isset($orders[$orderId])) {
+            $orders[$orderId] = [
+                'order_id' => $orderId,
+                'order_date' => $result['order_date'],
+                'order_status' => $result['order_status'],
+                'products' => []
+            ];
+        }
+            $orders[$orderId]['products'][] = [
+                'item_quantity' => $result['item_quantity'],
+                'product_name' => $result['product_name'],
+                'price' => $result['price'],
+                'image_path' => $result['image_path']
+            ];
+        
+    }
+    echo "<pre>";
+    print_r($orders);
+    echo "</pre>";}
+
+
+
 ?>
 
 <!DOCTYPE html>

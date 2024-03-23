@@ -55,6 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
     $address = trim($_POST['buyer_address']);
     $phone = trim($_POST['buyer_phone_number']);
     $buyerName = trim($_POST['buyer_name']);
+
+    $salesTaxes = ($subtotal + 10.00) * 0.06;
     // Calculate total payment amount
     $totalPaymentAmount = $subtotal + 10.00 + $salesTaxes; // Subtotal + Shipping Fee + Sales Taxes
     
@@ -78,18 +80,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
         $cartId = isset($cartItems[0]['cart_id']) ? $cartItems[0]['cart_id'] : null;
         if ($cartId) {
             // Assuming $subtotal holds the correct subtotal value
-            $stmt = $conn->prepare("INSERT INTO payment (payment_id, cart_id, user_id, payment_datetime, payment_method, total_payment_amount) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO payment (payment_id, user_id, payment_datetime, payment_method, total_payment_amount) VALUES (?, ?, ?, ?, ?)");
             $stmt->bindParam(1, $paymentId);
-            $stmt->bindParam(2, $cartId);
-            $stmt->bindParam(3, $userId);
-            $stmt->bindParam(4, $paymentDatetime);
-            $stmt->bindParam(5, $paymentMethod);
-            $stmt->bindParam(6, $totalPaymentAmount);
+            //$stmt->bindParam(2, $cartId);
+            $stmt->bindParam(2, $userId);
+            $stmt->bindParam(3, $paymentDatetime);
+            $stmt->bindParam(4, $paymentMethod);
+            $stmt->bindParam(5, $totalPaymentAmount);
             $stmt->execute();
 
+            $order_stmt = $conn->prepare("INSERT INTO orders (customer_id, order_date, total_amount)VALUES(?,NOW(),?)");            
+            $order_stmt->bindParam(1,$userId);
+            $order_stmt->bindParam(2,$totalPaymentAmount);
+            $order_stmt->execute();
+
+            $orderId = $conn->lastInsertId();
+
+            foreach($cartItems as $item){
+                $productId = $item['product_id'];
+                $quantity = $item['quantity'];
+
+                $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(payment_id, order_id, product_id, user_id,item_quantity)VALUES(?,?,?,?,?)");
+                $order_item_stmt->bindParam(1,$paymentId);
+                $order_item_stmt->bindParam(2,$orderId);
+                $order_item_stmt->bindParam(3,$productId);
+                $order_item_stmt->bindParam(4,$userId);
+                $order_item_stmt->bindParam(5,$quantity);
+                $order_item_stmt->execute();
+            }
+
+    // Delete cart items associated with the user
+
+    $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
+    $stmt->bindParam(1, $userId);
+    if ($stmt->execute()) {
+        echo "Cart items deleted successfully."; // Debugging statement
+
+         
+    } else {
+        echo "Error deleting cart items: " . $stmt->errorInfo()[2]; // Output any errors
+    }
+
             // Redirect to index.php with success parameter
-            header("Location: index.php?success=true");
-            exit();
+         header("Location: index.php?success=true");
+         exit();
+           
         } else {
             echo "Error: No cart items found for the user.";
         }
@@ -104,11 +139,33 @@ function isValidPhoneNumber($phone) {
 
 // Delete cart items after successful payment
 if (isset($_GET['success']) && $_GET['success'] == 'true') {
+    $order_stmt = $conn->prepare("INSERT INTO orders (customer_id, order_date, total_amount)VALUES(?,NOW(),?)");            
+            $order_stmt->bindParam(1,$userId);
+            $order_stmt->bindParam(2,$totalPaymentAmount);
+            $order_stmt->execute();
+
+            $orderId = $conn->lastInsertId();
+
+            foreach($cartItems as $item){
+                $productId = $item['product_id'];
+                $quantity = $item['quantity'];
+
+                $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(payment_id, order_id, product_id, user_id)VALUES(?,?,?,?)");
+                $order_item_stmt->bindParam(1,$paymentId);
+                $order_item_stmt->bindParam(2,$orderId);
+                $order_item_stmt->bindParam(3,$productId);
+                $order_item_stmt->bindParam(4,$userId);
+                $order_item_stmt->execute();
+            }
+
     // Delete cart items associated with the user
+
     $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
     $stmt->bindParam(1, $userId);
     if ($stmt->execute()) {
         echo "Cart items deleted successfully."; // Debugging statement
+
+         
     } else {
         echo "Error deleting cart items: " . $stmt->errorInfo()[2]; // Output any errors
     }
