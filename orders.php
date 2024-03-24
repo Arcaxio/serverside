@@ -17,7 +17,7 @@ if (isset ($_SESSION['username'])) {
     $username = null;  // Set a default, or perform other actions if needed
 }
 
-// Fetch cart items
+// Fetch order items
 $orders = [];
 $total = 0;
 if ($userId !== null) {
@@ -30,7 +30,7 @@ if ($userId !== null) {
     $order_stmt->bindParam(1, $userId);
 
 } else {
-    // Handle guest cart (optional, you might use a session-based cart) 
+   
 }
 
 if ($order_stmt) { // Only attempt execution if the statement was prepared
@@ -150,7 +150,7 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
             ?>
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Order # <?php echo $order['order_id']; ?></h5>
+                    <h5 class="card-title">Order ID: # <?php echo $order['order_id']; ?></h5>
                     <p class="card-text">Date: <?php echo $order['order_date']; ?></p>
                     <p class="card-text">Status: <?php echo $order['order_status']; ?> </p>
                     <table class="table">
