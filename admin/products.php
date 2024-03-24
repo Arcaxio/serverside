@@ -30,6 +30,29 @@ if (isset ($_POST['submit'])) {
 // Helper functions
 function addProduct($conn)
 {
+    $uploadsDir = "../images/"; // Target directory for uploads
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+    if (isset ($_FILES['image_upload'])) {
+        $tmpName = $_FILES['image_upload']['tmp_name'];
+        $fileName = $_FILES['image_upload']['name'];
+        $fileType = $_FILES['image_upload']['type'];
+
+        if (in_array($fileType, $allowedTypes)) {
+            $targetFilePath = $uploadsDir . basename($fileName);
+
+            if (move_uploaded_file($tmpName, $targetFilePath)) {
+                // Image uploaded successfully 
+                // Update the 'image_path' field 
+                $_POST['image_path'] = $fileName;
+            } else {
+                // Error during file upload
+            }
+        } else {
+            // Invalid file type
+        }
+    }
+
     $stmt = $conn->prepare("INSERT INTO products (product_name, description, price, image_path, category_id) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([
         $_POST['product_name'],
@@ -88,7 +111,7 @@ function getProduct($conn, $id)
                 </a>
             </div>
             <div class="mx-4">
-            <div class="p-3" onclick="location.href='staff_home.php';" style="cursor: pointer;">
+                <div class="p-3" onclick="location.href='staff_home.php';" style="cursor: pointer;">
                     <i class="bi bi-house-door me-3"></i>
                     Home
                 </div>
@@ -96,7 +119,8 @@ function getProduct($conn, $id)
                     <i class="bi bi-cart me-3"></i>
                     Orders
                 </div>
-                <div class="p-3 border rounded rounded-3 bg-white" onclick="location.href='products.php';" style="cursor: pointer;">
+                <div class="p-3 border rounded rounded-3 bg-white" onclick="location.href='products.php';"
+                    style="cursor: pointer;">
                     <i class="bi bi-box-seam me-3"></i>
                     Products
                 </div>
@@ -124,46 +148,6 @@ function getProduct($conn, $id)
                 <div class="p-3 border rounded rounded-3">
 
                     <div class="row">
-                        <div class="col-6 justify-content-around">
-                            <h4 class="mb-2">Add Product</h4>
-                            <form method="post">
-                                <input type="hidden" name="product_id"
-                                    value="<?php echo isset ($product) ? $product['product_id'] : ''; ?>">
-                                <div class="py-1">
-                                    <label for="product_name">Product Name:</label>
-                                    <input type="text" class="form-control" id="product_name" name="product_name"
-                                        required>
-                                </div>
-
-                                <div class="py-1">
-                                    <label for="description">Description:</label>
-                                    <textarea class="form-control" id="description" name="description"></textarea>
-                                </div>
-
-                                <div class="py-1">
-                                    <label for="price">Price:</label>
-                                    <input type="number" class="form-control" id="price" name="price" step=".01"
-                                        required>
-                                </div>
-
-                                <div class="py-1">
-                                    <label for="image_path">Image Link:</label>
-                                    <input type="text" class="form-control" id="image_path" name="image_path" required>
-                                </div>
-
-                                <div class="py-1">
-                                    <label for="category_id">Category:</label>
-                                    <select class="form-control" id="category_id" name="category_id">
-                                        <option value="1">Category 1</option>
-                                        <option value="2">Category 2</option>
-                                        <option value="3">Category 3</option>
-                                    </select>
-                                </div>
-                                <button type="submit" name="submit" class="btn btn-primary mt-3">Add Product</button>
-                            </form>
-
-                        </div>
-
                         <div class="col-6">
                             <h4 class="mb-3">Products</h4>
                             <table class="table border">
@@ -201,6 +185,55 @@ function getProduct($conn, $id)
                                 </tbody>
                             </table>
                         </div>
+                        <div class="col-6 justify-content-around">
+                            <h4 class="mb-2">Add Product</h4>
+                            <form method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="product_id"
+                                    value="<?php echo isset ($product) ? $product['product_id'] : ''; ?>">
+                                <div class="py-1">
+                                    <label for="product_name">Product Name:</label>
+                                    <input type="text" class="form-control" id="product_name" name="product_name"
+                                        required>
+                                </div>
+
+                                <div class="py-1">
+                                    <label for="description">Description:</label>
+                                    <textarea class="form-control" id="description" name="description"></textarea>
+                                </div>
+
+                                <div class="py-1">
+                                    <label for="price">Price:</label>
+                                    <input type="number" class="form-control" id="price" name="price" step=".01"
+                                        required>
+                                </div>
+
+                                <div class="row py-1 align-items-center justify-content-between">
+                                    <div class="col-5">
+                                        <label for="image_path">Image Link:</label>
+                                        <input type="text" class="form-control" id="image_path" name="image_path"
+                                            required>
+                                    </div>
+                                    OR
+                                    <div class="col-6">
+                                        <label for="image_upload">Upload Image:</label>
+                                        <input type="file" class="form-control" id="image_upload" name="image_upload"
+                                            accept="image/*">
+                                    </div>
+                                </div>
+
+                                <div class="py-1">
+                                    <label for="category_id">Category:</label>
+                                    <select class="form-control" id="category_id" name="category_id">
+                                        <option value="1">Category 1</option>
+                                        <option value="2">Category 2</option>
+                                        <option value="3">Category 3</option>
+                                    </select>
+                                </div>
+                                <div class="mt-3 d-flex justify-content-end">
+                                    <button type="submit" name="submit" class="btn btn-primary">Add Product</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -236,6 +269,15 @@ function getProduct($conn, $id)
                 const deleteUrl = 'products.php?action=delete&id=' + productId;
                 confirmButton.setAttribute('href', deleteUrl);
             });
+        });
+    </script>
+    <script>
+        const imageUploadInput = document.getElementById('image_upload');
+        const imagePathInput = document.getElementById('image_path');
+
+        imageUploadInput.addEventListener('change', function () {
+            const uploadedFileName = this.files[0].name;
+            imagePathInput.value = uploadedFileName;
         });
     </script>
 </body>
