@@ -218,14 +218,16 @@ if (isset ($_GET['success'])) {
                                             }
                                             ?>" class="card-img-top" alt="...">
                                             <div class="card-body">
-                                                <h5 class="card-title">
+                                                <h5 class="card-title text-center">
                                                     <?php echo $row['product_name']; ?>
                                                 </h5>
-                                                <p class="card-text">$
+                                                <p class="card-text text-center">$
                                                     <?php echo $row['price']; ?>
                                                 </p>
-                                                <a href="product_details.php?id=<?php echo $row['product_id']; ?>"
-                                                    class="btn btn-primary">View Details</a>
+                                                <div class="d-flex justify-content-center">
+                                                    <a href="product_details.php?id=<?php echo $row['product_id']; ?>"
+                                                        class="btn btn-primary">View Details</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
