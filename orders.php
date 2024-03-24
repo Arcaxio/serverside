@@ -5,12 +5,12 @@ session_start();
 if (isset ($_SESSION['username'])) {
     $username = $_SESSION['username'];
     $username = $_SESSION['username'];
-    $stmt = $conn->prepare("SELECT customer_id FROM customers WHERE username = ?");
+    $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ?");
     $stmt->bindParam(1, $username);
     $stmt->execute();
 
     if ($stmt->rowCount() === 1) {
-        $userId = $stmt->fetch()['customer_id'];
+        $userId = $stmt->fetch()['user_id'];
     }
 } else {
     // Handle the case when there is no 'username' in session (Optional)
@@ -26,7 +26,7 @@ if ($userId !== null) {
                             JOIN ordered_items ON orders.order_id = ordered_items.order_id 
                             JOIN products ON 
                             ordered_items.product_id = products.product_id
-                            WHERE orders.customer_id = ?");
+                            WHERE orders.user_id = ?");
     $order_stmt->bindParam(1, $userId);
 
 } else {
@@ -59,12 +59,7 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
             ];
         
     }
-    echo "<pre>";
-    print_r($orders);
-    echo "</pre>";}
-
-
-
+}
 ?>
 
 <!DOCTYPE html>

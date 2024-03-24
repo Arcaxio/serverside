@@ -160,6 +160,7 @@ function getProduct($conn, $id)
                                     <select class="form-control" id="category_id" name="category_id">
                                         <option value="1">Category 1</option>
                                         <option value="2">Category 2</option>
+                                        <option value="3">Category 3</option>
                                     </select>
                                 </div>
                                 <button type="submit" name="submit" class="btn btn-primary mt-3">Add Product</button>
@@ -196,7 +197,6 @@ function getProduct($conn, $id)
                                                     href="edit_product.php?id=<?php echo $row['product_id']; ?>">Edit</a>
                                             </td>
                                             <td class="text-center">
-                                                <!-- <a href="products.php?action=delete&id=<?php echo $row['product_id']; ?>">Delete</a> -->
                                                 <a href="" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                                     data-product-id="<?php echo $row['product_id']; ?>">Delete</a>
                                             </td>

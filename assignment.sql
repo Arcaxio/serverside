@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 23, 2024 at 04:42 PM
+-- Generation Time: Mar 23, 2024 at 10:25 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,36 +50,9 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`category_id`, `category_name`) VALUES
-(1, 'Shoes'),
-(2, 'Others');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `customers`
---
-
-CREATE TABLE `customers` (
-  `customer_id` int(11) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `address` text NOT NULL,
-  `phone_number` varchar(255) NOT NULL,
-  `zipcode` varchar(255) NOT NULL,
-  `city` varchar(255) NOT NULL,
-  `state` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `customers`
---
-
-INSERT INTO `customers` (`customer_id`, `username`, `password`, `name`, `email`, `address`, `phone_number`, `zipcode`, `city`, `state`) VALUES
-(1, 'customer123', '$2y$10$/0uS4KyGj8uJS7aozeO9seWMGQKZkG8yorslPHC1I/av6GJIRbxdm', '', 'customer123@mail.com', '', '', '', '', ''),
-(2, 'customer321', '$2y$10$28dZT.mxwSHHrJB/OR8uxO67CywHqIRLpZtfo5lNclsiDvdHE0N1u', '', 'customer321@gmail.com', '', '', '', '', ''),
-(5, 'testing123', '$2y$10$k5.HqC.4ueEf/LqUXsUcmOyTVQ190xijrc5EUtw59pdTwW6x/ghcq', 'Connie Tang Ming Xin', 'testing123@hotmail.com', 'Lot 6135, Lorong Permata 11, Vista Perdana Phase 2, 98000 Miri, Sarawak', '01111248294', '', '', '');
+(1, 'Desktop & Laptop'),
+(2, 'Smartphones'),
+(3, 'Accessories');
 
 -- --------------------------------------------------------
 
@@ -92,8 +65,17 @@ CREATE TABLE `ordered_items` (
   `payment_id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL
+  `user_id` int(11) NOT NULL,
+  `item_quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ordered_items`
+--
+
+INSERT INTO `ordered_items` (`order_item_id`, `payment_id`, `order_id`, `product_id`, `user_id`, `item_quantity`) VALUES
+(10, 631631, 7, 15, 1, 1),
+(11, 631631, 7, 16, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -103,11 +85,18 @@ CREATE TABLE `ordered_items` (
 
 CREATE TABLE `orders` (
   `order_id` int(11) NOT NULL,
-  `customer_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `order_date` datetime NOT NULL,
   `total_amount` decimal(10,2) NOT NULL,
   `order_status` enum('pending','processing','shipped','delivered','cancelled') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `user_id`, `order_date`, `total_amount`, `order_status`) VALUES
+(7, 1, '2024-03-24 04:11:47', 242.74, 'processing');
 
 -- --------------------------------------------------------
 
@@ -119,7 +108,7 @@ CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `payment_datetime` date NOT NULL,
+  `payment_datetime` datetime NOT NULL,
   `total_payment_amount` int(50) NOT NULL,
   `payment_method` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -129,9 +118,7 @@ CREATE TABLE `payment` (
 --
 
 INSERT INTO `payment` (`payment_id`, `product_id`, `user_id`, `payment_datetime`, `total_payment_amount`, `payment_method`) VALUES
-(183203, 11, 5, '2024-03-23', 160, 'Debit/Credit Card'),
-(427547, 11, 5, '2024-03-23', 160, 'Debit/Credit Card'),
-(919262, 6, 5, '2024-03-23', 1460, 'Debit/Credit Card');
+(631631, 15, 1, '2024-03-23 21:11:47', 243, 'Debit/Credit Card');
 
 -- --------------------------------------------------------
 
@@ -143,7 +130,6 @@ CREATE TABLE `products` (
   `product_id` int(11) NOT NULL,
   `product_name` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  `stock` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `image_path` varchar(255) NOT NULL,
   `category_id` int(11) NOT NULL
@@ -153,12 +139,15 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `product_name`, `description`, `stock`, `price`, `image_path`, `category_id`) VALUES
-(3, 'Premium Phone Case', 'Sleek and protective case for your phone', 0, 19.99, 'premium_case.jpg', 2),
-(6, 'Adidas Air Force Max 123', 'Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 Fake Nikes Max Air Force 123 ', 0, 289.99, 'https://i.ebayimg.com/images/g/TH0AAOSwGTBe9uCO/s-l1600.jpg', 1),
-(11, 'Adidas Air Force Max', 'Lorem Ipsum', 0, 150.00, 'https://cdn-images.farfetch-contents.com/12/57/95/17/12579517_12011969_1000.jpg', 1),
-(12, 'Adidas Air Force Max 1s', 'Lorems Impsum is the best', 0, 1289.99, 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/6b1ebdb3-9043-492d-94bf-8ab78dccafb9/air-max-dn-mens-shoes-27XkSQ.png', 1),
-(13, 'Nike Hype Beast', 'HYPER', 0, 1989.00, 'https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2019%2F10%2Fnike-air-force-max-ii-white-black-1.jpg?cbr=1&q=90', 1);
+INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `image_path`, `category_id`) VALUES
+(3, 'Premium Phone Case', 'Sleek and protective case for your phone', 19.99, 'premium_case.jpg', 3),
+(14, 'MX Master 3S', 'Meet MX Master 3S – an iconic mouse remastered.\r\nFeel every moment of your workflow with even more precision, tactility, and performance, thanks to Quiet Clicks and an 8,000 DPI track-on-glass 134 mm minimum glass thickness track on glass sensor.', 569.00, 'https://resource.logitech.com/w_692,c_lpad,ar_4:3,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/mx-master-3s/gallery/mx-master-3s-mouse-top-view-graphite.png?v=1', 1),
+(15, 'PEBBLE MOUSE 2 M350S', 'Slim, compact Bluetooth® mouse with a customizable button.', 119.00, 'https://resource.logitech.com/w_692,c_lpad,ar_4:3,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/pebble-mouse-2-m350s/gallery/pebble-mouse-2-m350s-top-tonal-rose-gallery.png?v=1', 1),
+(16, 'ZONE VIBE 100', 'Lightweight, wireless headphones — professional enough for the office, perfect for working from home.', 100.00, 'https://resource.logitech.com/w_692,c_lpad,ar_4:3,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/headsets/zone-vibe-100/gallery/zone-vibe-100-gallery-white-1.png?v=1', 1),
+(17, 'Anker Prime 67W GaN Wall Charger (3 Ports)', 'Fast Charging for 3 Devices: With 2 USB-C ports and 1 USB-A port, effortlessly charge your phone, tablet, and notebook all at once from a single charger. Connect a single device to charge up to 67W.', 90.00, 'https://cdn.shopify.com/s/files/1/0493/9834/9974/files/Rectangle8.png?v=1690893875', 3),
+(18, 'Anker 765 USB-C to USB-C Cable (3 ft / 6 ft)', 'A maximum output of 240W and compatibility with USB Power Delivery 3.1 allows for high-speed charging to a wide range of devices including phones, tablets, and laptops.', 35.00, 'https://cdn.shopify.com/s/files/1/0493/9834/9974/files/6ft-01.jpg?v=1697681538', 2),
+(19, 'Anker 737 Power Bank (PowerCore 24K)', 'Equipped with the latest Power Delivery 3.1 and bi-directional technology to quickly recharge the portable charger or get a 140W ultra-powerful charge. (Note: This power bank does not support wireless recharge using a charging base)', 90.00, 'https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A1289011-Anker_737_Power_Bank_PowerCore_24K_1.png?v=1672388225', 2),
+(20, 'PRO X', 'The tournament-proven PRO design, now with your choice of swappable pro-grade GX mechanical switches: Clicky, Tactile and Linear. Built to win in collaboration with the world’s top esports athletes.', 600.00, 'https://resource.logitechg.com/w_692,c_lpad,ar_4:3,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/gaming/en/products/pro-x-keyboard/pro-x-keyboard-gallery-1.png?v=1', 1);
 
 -- --------------------------------------------------------
 
@@ -181,6 +170,33 @@ INSERT INTO `staff` (`staff_id`, `username`, `password`, `role`) VALUES
 (2, 'username123', '$2y$10$V8fNtj9dzDMLEg4DQh1D1Og53ui.J2YHhHUajPgKfyyg5NVhML2bi', 'manager'),
 (3, 'username789', '$2y$10$BjGDRHaBM8.ZEzWMqxGkL..J8Hja/OiGB..hlGkbX05U.36dnrfwG', 'admin');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `address` text NOT NULL,
+  `phone_number` varchar(255) NOT NULL,
+  `zipcode` varchar(255) NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `state` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `username`, `password`, `name`, `email`, `address`, `phone_number`, `zipcode`, `city`, `state`) VALUES
+(1, 'customer123', '$2y$10$/0uS4KyGj8uJS7aozeO9seWMGQKZkG8yorslPHC1I/av6GJIRbxdm', '', 'customer123@mail.com', '', '', '', '', ''),
+(5, 'testing123', '$2y$10$k5.HqC.4ueEf/LqUXsUcmOyTVQ190xijrc5EUtw59pdTwW6x/ghcq', 'Connie Tang Ming Xin', 'testing123@hotmail.com', 'Lot 6135, Lorong Permata 11, Vista Perdana Phase 2, 98000 Miri, Sarawak', '01111248294', '', '', '');
+
 --
 -- Indexes for dumped tables
 --
@@ -198,12 +214,6 @@ ALTER TABLE `cart`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`category_id`);
-
---
--- Indexes for table `customers`
---
-ALTER TABLE `customers`
-  ADD PRIMARY KEY (`customer_id`);
 
 --
 -- Indexes for table `ordered_items`
@@ -243,6 +253,12 @@ ALTER TABLE `staff`
   ADD UNIQUE KEY `username` (`username`);
 
 --
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -250,31 +266,25 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `customers`
---
-ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `ordered_items`
 --
 ALTER TABLE `ordered_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `payment`
@@ -286,13 +296,19 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
   MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
@@ -303,7 +319,7 @@ ALTER TABLE `staff`
 --
 ALTER TABLE `cart`
   ADD CONSTRAINT `cart_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
-  ADD CONSTRAINT `cart_user_id` FOREIGN KEY (`user_id`) REFERENCES `customers` (`customer_id`);
+  ADD CONSTRAINT `cart_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `ordered_items`
@@ -319,7 +335,7 @@ ALTER TABLE `ordered_items`
 --
 ALTER TABLE `payment`
   ADD CONSTRAINT `payment_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
-  ADD CONSTRAINT `payment_user_id` FOREIGN KEY (`user_id`) REFERENCES `customers` (`customer_id`);
+  ADD CONSTRAINT `payment_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

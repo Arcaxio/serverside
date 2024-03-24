@@ -5,12 +5,12 @@ session_start();
 $userId = null;
 if (isset ($_SESSION['username'])) {
     $username = $_SESSION['username'];
-    $stmt = $conn->prepare("SELECT customer_id FROM customers WHERE username = ?");
+    $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ?");
     $stmt->bindParam(1, $username);
     $stmt->execute();
 
     if ($stmt->rowCount() === 1) {
-        $userId = $stmt->fetch()['customer_id'];
+        $userId = $stmt->fetch()['user_id'];
     }
 } else {
     // Handle the case when there is no 'username' in session (Optional)
@@ -45,7 +45,7 @@ $paymentDatetime = date("Y-m-d H:i:s");
 
 // Fetch buyer information from customer table
 if ($userId !== null) {
-    $stmt = $conn->prepare("SELECT * FROM customers WHERE customer_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
     $stmt->bindParam(1, $userId);
     $stmt->execute();
     $customer = $stmt->fetchAll();
@@ -69,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
     } else {
         // Proceed with payment confirmation
         // Update customer information
-        $stmt = $conn->prepare("UPDATE customers SET name = ?, address = ?, phone_number = ? WHERE customer_id = ?");
+        $stmt = $conn->prepare("UPDATE users SET name = ?, address = ?, phone_number = ? WHERE user_id = ?");
         $stmt->bindParam(1, $buyerName);
         $stmt->bindParam(2, $address);
         $stmt->bindParam(3, $phone);
@@ -90,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
             $stmt->bindParam(6, $totalPaymentAmount);
             $stmt->execute();
 
-            $order_stmt = $conn->prepare("INSERT INTO orders (customer_id, order_date, total_amount)VALUES(?,NOW(),?)");            
+            $order_stmt = $conn->prepare("INSERT INTO orders (user_id, order_date, total_amount)VALUES(?,NOW(),?)");            
             $order_stmt->bindParam(1,$userId);
             $order_stmt->bindParam(2,$totalPaymentAmount);
             $order_stmt->execute();
@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                 $productId = $item['product_id'];
                 $quantity = $item['quantity'];
 
-                $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(payment_id, order_id, product_id, user_id,item_quantity)VALUES(?,?,?,?,?)");
+                $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(payment_id, order_id, product_id, user_id, item_quantity)VALUES(?,?,?,?,?)");
                 $order_item_stmt->bindParam(1,$paymentId);
                 $order_item_stmt->bindParam(2,$orderId);
                 $order_item_stmt->bindParam(3,$productId);
@@ -140,7 +140,7 @@ function isValidPhoneNumber($phone) {
 
 // Delete cart items after successful payment
 if (isset($_GET['success']) && $_GET['success'] == 'true') {
-    $order_stmt = $conn->prepare("INSERT INTO orders (customer_id, order_date, total_amount)VALUES(?,NOW(),?)");            
+    $order_stmt = $conn->prepare("INSERT INTO orders (user_id, order_date, total_amount)VALUES(?,NOW(),?)");            
             $order_stmt->bindParam(1,$userId);
             $order_stmt->bindParam(2,$totalPaymentAmount);
             $order_stmt->execute();

@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     // Prepared statement for security
-    $stmt = $conn->prepare("SELECT customer_id, username, password FROM customers WHERE username = ?");
+    $stmt = $conn->prepare("SELECT user_id, username, password FROM users WHERE username = ?");
     $stmt->bindParam(1, $username);
     $stmt->execute();
 

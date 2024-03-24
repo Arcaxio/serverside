@@ -5,12 +5,12 @@ session_start();
 $userId = null;
 if (isset ($_SESSION['username'])) {
     $username = $_SESSION['username'];
-    $stmt = $conn->prepare("SELECT customer_id FROM customers WHERE username = ?");
+    $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ?");
     $stmt->bindParam(1, $username);
     $stmt->execute();
 
     if ($stmt->rowCount() === 1) {
-        $userId = $stmt->fetch()['customer_id'];
+        $userId = $stmt->fetch()['user_id'];
     }
 } else {
     // Handle the case when there is no 'username' in session (Optional)
