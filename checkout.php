@@ -1,158 +1,170 @@
 <?php
-// Step 1: Include necessary files and start the session
-include 'includes/db_connect.php';
-session_start();
+    // Step 1: Include necessary files and start the session
+    include 'includes/db_connect.php';
+    session_start();
 
-// Step 2: Retrieve the user ID if the username is set in the session
-$userId = null;
-if (isset ($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-    $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ?");
-    $stmt->bindParam(1, $username);
-    $stmt->execute();
-
-    if ($stmt->rowCount() === 1) {
-        $userId = $stmt->fetch()['user_id'];
-    }
-} else {
-    // Handle the case when there is no 'username' in session (Optional)
-    $username = null;  // Set a default, or perform other actions if needed
-}
-
-// Step 3: Generate a random payment ID and get the current date and time
-$paymentId = mt_rand(100000, 999999);
-$paymentDatetime = date("Y-m-d H:i:s");
-
-// Step 4: Fetch cart items and calculate subtotal if the user ID is not null
-$cartItems = [];
-$subtotal = 0;
-$salesTaxes = 0;
-
-if ($userId !== null) {
-    $stmt = $conn->prepare("SELECT cart.cart_id, cart.product_id, cart.quantity, products.product_name, products.price 
-                            FROM cart 
-                            JOIN products ON cart.product_id = products.product_id 
-                            WHERE cart.user_id = ?");
-    $stmt->bindParam(1, $userId);
-    $stmt->execute();
-    $cartItems = $stmt->fetchAll();
-
-    // Calculate subtotal
-    foreach ($cartItems as $item) {
-        $subtotal += $item['price'] * $item['quantity'];
-    }
-}
-
-// Step 5: Fetch buyer information from the users table if the user ID is not null
-if ($userId !== null) {
-    $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
-    $stmt->bindParam(1, $userId);
-    $stmt->execute();
-    $users = $stmt->fetchAll();
-}
-
-// Step 6: Parse the JSON data to get states and cities
-// Include the JSON file
-$citiesJson = file_get_contents('cities.json');
-$citiesData = json_decode($citiesJson, true);
-
-// Fetch states from the JSON data
-$states = array_keys($citiesData);
-
-// Step 8: Define a function to validate phone numbers
-function isValidPhoneNumber($phoneNumber) {
-    // Validate phone number format (assuming 10 or 11-digit phone number)
-    $phoneNumberPattern = '/^\d{10,11}$/'; // Accepts 10 or 11-digit phone number
-    return preg_match($phoneNumberPattern, $phoneNumber);
-}
-
-// Step 9: Process form submission and handle payment confirmation
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
-    $buyerName = trim($_POST['buyer_name']);
-    $address = trim($_POST['buyer_address']);
-    $phoneNumber = trim($_POST['buyer_phone_number']);
-    $zipCode = trim($_POST['buyer_zipcode']);
-    $city = trim($_POST['buyer_city']);
-    $state = trim($_POST['buyer_state']);
-
-    $salesTaxes = ($subtotal + 10.00) * 0.06;
-    // Calculate total payment amount
-    $totalPaymentAmount = $subtotal + 10.00 + $salesTaxes; // Subtotal + Shipping Fee + Sales Taxes
-    
-    // Validate buyer name, address, phone number, zipcode, city, and state
-    if (empty($buyerName) || empty($address) || empty($phoneNumber) || empty($zipCode) || empty($city) || empty($state)) {
-        echo '<script>alert("Please fill in all the required fields.");</script>';
-    } elseif (!isValidPhoneNumber($phoneNumber)) {
-        echo '<script>alert("Please provide a valid phone number.");</script>';
-    } else {
-        // Proceed with payment confirmation
-        // Update users information
-        $stmt = $conn->prepare("UPDATE users SET name = ?, address = ?, phone_number = ?, zipcode = ?, city = ?, state = ? WHERE user_id = ?");
-        $stmt->bindParam(1, $buyerName);
-        $stmt->bindParam(2, $address);
-        $stmt->bindParam(3, $phoneNumber);
-        $stmt->bindParam(4, $zipCode);
-        $stmt->bindParam(5, $city);
-        $stmt->bindParam(6, $state);
-        $stmt->bindParam(7, $userId);
+    // Step 2: Retrieve the user ID if the username is set in the session
+    $userId = null;
+    if (isset ($_SESSION['username'])) {
+        $username = $_SESSION['username'];
+        $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ?");
+        $stmt->bindParam(1, $username);
         $stmt->execute();
 
-        // Insert payment details into payment table
-        $paymentMethod = $_POST['payment_method']; // Assuming payment method is selected in the form
-        // Fetch the cart_id associated with the user
-        $productId = isset($cartItems[0]['product_id']) ? $cartItems[0]['product_id'] : null;
-        if ($productId) {
-            // Assuming $subtotal holds the correct subtotal value
-            $stmt = $conn->prepare("INSERT INTO payment (payment_id, product_id, user_id, payment_datetime, payment_method, total_payment_amount) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bindParam(1, $paymentId);
-            $stmt->bindParam(2, $productId);
-            $stmt->bindParam(3, $userId);
-            $stmt->bindParam(4, $paymentDatetime);
-            $stmt->bindParam(5, $paymentMethod);
-            $stmt->bindParam(6, $totalPaymentAmount);
-            $stmt->execute();
-
-            $order_stmt = $conn->prepare("INSERT INTO orders (user_id, order_date, total_amount)VALUES(?,NOW(),?)");            
-            $order_stmt->bindParam(1,$userId);
-            $order_stmt->bindParam(2,$totalPaymentAmount);
-            $order_stmt->execute();
-
-            $orderId = $conn->lastInsertId();
-
-            foreach($cartItems as $item){
-                $productId = $item['product_id'];
-                $quantity = $item['quantity'];
-
-                $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(payment_id, order_id, product_id, user_id, item_quantity)VALUES(?,?,?,?,?)");
-                $order_item_stmt->bindParam(1,$paymentId);
-                $order_item_stmt->bindParam(2,$orderId);
-                $order_item_stmt->bindParam(3,$productId);
-                $order_item_stmt->bindParam(4,$userId);
-                $order_item_stmt->bindParam(5,$quantity);
-                $order_item_stmt->execute();
-            }
-
-    // Delete cart items associated with the user
-
-    $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
-    $stmt->bindParam(1, $userId);
-    if ($stmt->execute()) {
-        echo "Cart items deleted successfully."; // Debugging statement
-
-         
+        if ($stmt->rowCount() === 1) {
+            $userId = $stmt->fetch()['user_id'];
+        }
     } else {
-        echo "Error deleting cart items: " . $stmt->errorInfo()[2]; // Output any errors
+        // Handle the case when there is no 'username' in session (Optional)
+        $username = null;  // Set a default, or perform other actions if needed
     }
 
-            // Redirect to index.php with success parameter
-         header("Location: index.php?success=true");
-         exit();
-           
-        } else {
-            echo "Error: No cart items found for the user.";
+    // Step 3: Generate a random payment ID and get the current date and time
+    $paymentId = mt_rand(100000, 999999);
+    $paymentDatetime = date("Y-m-d H:i:s");
+
+    // Step 4: Fetch cart items and calculate subtotal if the user ID is not null
+    $cartItems = [];
+    $subtotal = 0;
+    $salesTaxes = 0;
+
+    if ($userId !== null) {
+        $stmt = $conn->prepare("SELECT cart.cart_id, cart.product_id, cart.quantity, products.product_name, products.price 
+                                FROM cart 
+                                JOIN products ON cart.product_id = products.product_id 
+                                WHERE cart.user_id = ?");
+        $stmt->bindParam(1, $userId);
+        $stmt->execute();
+        $cartItems = $stmt->fetchAll();
+
+        // Calculate subtotal
+        foreach ($cartItems as $item) {
+            $subtotal += $item['price'] * $item['quantity'];
         }
     }
-}
+
+
+    // Step 5: Fetch user'semail from the users table if the user ID is not null
+    if ($userId !== null) {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
+        $stmt->bindParam(1, $userId);
+        $stmt->execute();
+        $users = $stmt->fetchAll();
+    }
+
+
+    // Step 6: Parse the JSON data to get states and cities
+    // Include the JSON file
+    $citiesJson = file_get_contents('cities.json');
+    $citiesData = json_decode($citiesJson, true);
+
+    // Fetch states from the JSON data
+    $states = array_keys($citiesData);
+
+    // Step 7: Define a function to validate phone numbers
+    function isValidPhoneNumber($phoneNumber) {
+        // Validate phone number format (assuming 10 or 11-digit phone number)
+        $phoneNumberPattern = '/^\d{10,11}$/'; // Accepts 10 or 11-digit phone number
+        return preg_match($phoneNumberPattern, $phoneNumber);
+    }
+
+    // Step 8: Process form submission and handle payment confirmation
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
+        $buyerName = trim($_POST['buyer_name']);
+        $address = trim($_POST['buyer_address']);
+        $phoneNumber = trim($_POST['buyer_phone_number']);
+        $zipCode = trim($_POST['buyer_zipcode']);
+        $city = trim($_POST['buyer_city']);
+        $state = trim($_POST['buyer_state']);
+
+        $salesTaxes = ($subtotal + 10.00) * 0.06;
+        // Calculate total payment amount
+        $totalPaymentAmount = $subtotal + 10.00 + $salesTaxes; // Subtotal + Shipping Fee + Sales Taxes
+        
+        // Validate buyer name, address, phone number, zipcode, city, and state
+        if (empty($buyerName) || empty($address) || empty($phoneNumber) || empty($zipCode) || empty($city) || empty($state)) {
+            echo '<script>alert("Please fill in all the required fields.");</script>';
+        } elseif (!isValidPhoneNumber($phoneNumber)) {
+            echo '<script>alert("Please provide a valid phone number.");</script>';
+        } else {
+            // Proceed with payment confirmation
+
+            /*
+            // Update users information
+            $stmt = $conn->prepare("UPDATE users SET name = ?, address = ?, phone_number = ?, zipcode = ?, city = ?, state = ? WHERE user_id = ?");
+            $stmt->bindParam(1, $buyerName);
+            $stmt->bindParam(2, $address);
+            $stmt->bindParam(3, $phoneNumber);
+            $stmt->bindParam(4, $zipCode);
+            $stmt->bindParam(5, $city);
+            $stmt->bindParam(6, $state);
+            $stmt->bindParam(7, $userId);
+            $stmt->execute();
+            */
+
+            // Insert payment details into payment table
+            $paymentMethod = $_POST['payment_method']; // Assuming payment method is selected in the form
+            // Fetch the cart_id associated with the user
+            $productId = isset($cartItems[0]['product_id']) ? $cartItems[0]['product_id'] : null;
+            if ($productId) {
+                // Inster payment details into payment table
+                $stmt = $conn->prepare("INSERT INTO payment (payment_id, product_id, user_id, fullname, address, zipcode, city, state, phone_number, payment_datetime, payment_method, total_payment_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bindParam(1, $paymentId);
+                $stmt->bindParam(2, $productId);
+                $stmt->bindParam(3, $userId);
+                $stmt->bindParam(4, $buyerName);
+                $stmt->bindParam(5, $address);
+                $stmt->bindParam(6, $zipCode);
+                $stmt->bindParam(7, $city);
+                $stmt->bindParam(8, $state);
+                $stmt->bindParam(9, $phoneNumber);
+                $stmt->bindParam(10, $paymentDatetime);
+                $stmt->bindParam(11, $paymentMethod);
+                $stmt->bindParam(12, $totalPaymentAmount);
+                $stmt->execute();
+                
+
+                $order_stmt = $conn->prepare("INSERT INTO orders (user_id, order_date, total_amount)VALUES(?,NOW(),?)");            
+                $order_stmt->bindParam(1,$userId);
+                $order_stmt->bindParam(2,$totalPaymentAmount);
+                $order_stmt->execute();
+
+                $orderId = $conn->lastInsertId();
+
+                foreach($cartItems as $item){
+                    $productId = $item['product_id'];
+                    $quantity = $item['quantity'];
+
+                    $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(payment_id, order_id, product_id, user_id, item_quantity)VALUES(?,?,?,?,?)");
+                    $order_item_stmt->bindParam(1,$paymentId);
+                    $order_item_stmt->bindParam(2,$orderId);
+                    $order_item_stmt->bindParam(3,$productId);
+                    $order_item_stmt->bindParam(4,$userId);
+                    $order_item_stmt->bindParam(5,$quantity);
+                    $order_item_stmt->execute();
+                }
+
+                // Delete cart items associated with the user
+
+                $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
+                $stmt->bindParam(1, $userId);
+                if ($stmt->execute()) {
+                    echo "Cart items deleted successfully."; // Debugging statement
+
+                    
+                } else {
+                    echo "Error deleting cart items: " . $stmt->errorInfo()[2]; // Output any errors
+                }
+
+                // Redirect to index.php with success parameter
+                header("Location: index.php?success=true");
+                exit();
+            
+            } else {
+                    echo "Error: No cart items found for the user.";
+                }
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -172,7 +184,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
 </head>
 
 <body>
-<header class="header sticky-top py-3 bg-black">
+    <!-- Header -->
+    <header class="header sticky-top py-3 bg-black">
         <nav class="container d-flex justify-content-between align-items-center">
             <div class="text-light" onclick="location.href='index.php';" style="cursor: pointer;">
                 <i class="bi bi-app-indicator fs-3 me-3"></i>
@@ -229,8 +242,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                             </div>
                         </div>
                     </div>
+                    
                     <br>
-
                     <!-- Selected Order Products Section -->
                     <div class="table-responsive">
                         <h5 class="card-title">Selected Order Products</h5>
@@ -248,13 +261,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                             <!-- Table body for selected products -->
                             <tbody id="selected_products">
                                 <?php
-                                $totalPrice = 0;
-                                foreach ($cartItems as $index => $item) {
-                                    $no = $index + 1;
-                                    $productName = $item['product_name'];
-                                    $price = $item['price'];
-                                    $orderAmount = $item['quantity'];
-                                    $totalPrice += $price * $orderAmount;
+                                    $totalPrice = 0;
+                                    foreach ($cartItems as $index => $item) {
+                                        $no = $index + 1;
+                                        $productName = $item['product_name'];
+                                        $price = $item['price'];
+                                        $orderAmount = $item['quantity'];
+                                        $totalPrice += $price * $orderAmount;
                                 ?>
                                     <tr>
                                         <td><?php echo $no; ?></td>
@@ -268,30 +281,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                         </table>
                     </div>
 
+                    <!-- Buyer Information Form -->
                     <form id="confirm_payment_form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                        <!-- Buyer Information Form -->
                         <h3 class="card-title mt-4">Buyer Information</h3>
-                        <div class="row">
+                        <div class="row"><!-- New row -->
                             <div class="col">
                                 <!-- Full Name -->
                                 <div class="form-group">
                                     <label for="buyer_name">Full Name:</label>
-                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" placeholder="e.g: Full Name (as per IC/Passport)" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : $users[0]['name']; ?>" required>
+                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" placeholder="e.g: Full Name (as per IC/Passport)" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : ''; ?>" required>
                                 </div>
-
                                 <!-- Email -->
                                 <div class="form-group">
                                     <label for="buyer_email">Email:</label>
                                     <input type="email" class="form-control" id="buyer_email" value="<?php echo isset($users[0]['email']) ? $users[0]['email'] : '-NA-'; ?>" readonly>
                                 </div>
-
                                 <!-- Address -->
                                 <div class="form-group">
                                     <label for="buyer_address">Address:</label>
-                                    <input type="text" class="form-control" name="buyer_address" placeholder="e.g: (House/apartment/flat number), (Street)" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : $users[0]['address']; ?>" required>
+                                    <input type="text" class="form-control" name="buyer_address" placeholder="e.g: (House/apartment/flat number), (Street)" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : ''; ?>" required>
                                 </div>
 
-                                <div class="row">
+                                <div class="row"><!-- New row -->
                                     <!-- State dropdown -->
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -299,14 +310,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                             <select class="form-control" id="buyer_state" name="buyer_state" required onchange="this.form.submit()">
                                                 <option value="">Select State</option>
                                                 <?php
-                                                $states = json_decode(file_get_contents('cities.json'), true);
-                                                foreach ($states as $state => $cities) {
-                                                    echo '<option value="' . $state . '"';
-                                                    if (isset($_POST['buyer_state']) && $_POST['buyer_state'] == $state) {
-                                                        echo ' selected';
+                                                    $states = json_decode(file_get_contents('cities.json'), true);
+                                                    foreach ($states as $state => $cities) {
+                                                        echo '<option value="' . $state . '"';
+                                                        if (isset($_POST['buyer_state']) && $_POST['buyer_state'] == $state) {
+                                                            echo ' selected';
+                                                        }
+                                                        echo '>' . $state . '</option>';
                                                     }
-                                                    echo '>' . $state . '</option>';
-                                                }
                                                 ?>
                                             </select>
                                         </div>
@@ -318,16 +329,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                             <select class="form-control" id="buyer_city" name="buyer_city" required>
                                                 <option value="">Select City</option>
                                                 <?php
-                                                if (isset($_POST['buyer_state']) && $_POST['buyer_state'] != '') {
-                                                    $selectedState = $_POST['buyer_state'];
-                                                    foreach ($states[$selectedState] as $city) {
-                                                        echo '<option value="' . $city . '"';
-                                                        if (isset($_POST['buyer_city']) && $_POST['buyer_city'] == $city) {
-                                                            echo ' selected';
+                                                    if (isset($_POST['buyer_state']) && $_POST['buyer_state'] != '') {
+                                                        $selectedState = $_POST['buyer_state'];
+                                                        foreach ($states[$selectedState] as $city) {
+                                                            echo '<option value="' . $city . '"';
+                                                            if (isset($_POST['buyer_city']) && $_POST['buyer_city'] == $city) {
+                                                                echo ' selected';
+                                                            }
+                                                            echo '>' . $city . '</option>';
                                                         }
-                                                        echo '>' . $city . '</option>';
                                                     }
-                                                }
                                                 ?>
                                             </select>
                                         </div>
@@ -336,22 +347,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="buyer_zipcode">Zip Code:</label>
-                                            <input type="text" class="form-control" name="buyer_zipcode" placeholder="e.g: 12345" pattern="\d{5}" value="<?php echo isset($_POST['buyer_zipcode']) ? $_POST['buyer_zipcode'] : $users[0]['zipcode']; ?>" required>
+                                            <input type="text" class="form-control" name="buyer_zipcode" placeholder="e.g: 12345" pattern="\d{5}" value="<?php echo isset($_POST['buyer_zipcode']) ? $_POST['buyer_zipcode'] : ''; ?>" required>
                                         </div>
                                     </div>
-                                </div>
+                                </div><!-- Row end -->
 
                                 <!-- Phone Number -->
                                 <div class="form-group">
                                     <label for="buyer_phone_number">Phone Number:</label>
-                                    <input type="tel" class="form-control" name="buyer_phone_number" placeholder="e.g: 0123456789"pattern="\d{10,11}" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : $users[0]['phone_number']; ?>" required>
+                                    <input type="tel" class="form-control" name="buyer_phone_number" placeholder="e.g: 0123456789"pattern="\d{10,11}" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : ''; ?>" required>
                                 </div>
                             </div>
-                        </div>
+                        </div><!-- Row end -->
 
                         <!-- Payment Method Section -->
                         <h4 class="card-title mt-4">Payment Method</h4>
-                        <div class="row">
+                        <div class="row"><!-- New row -->
                             <div class="col">
                                 <div class="form-group">
                                     <label for="payment_method">Select Payment Method:</label>
@@ -363,10 +374,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                     </select>
                                 </div>
                             </div>
-                        </div>
+                        </div><!-- Row end -->
 
                         <!-- Total Payment Amount Section -->
-                        <div class="row mt-4">
+                        <div class="row mt-4"><!-- New row -->
                             <div class="col">
                                 <table class="table">
                                     <tbody>
@@ -379,8 +390,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                             <td>10.00</td>
                                         </tr>
                                         <?php
-                                        // Calculate sales taxes (6% of subtotal)
-                                        $salesTaxes = ($subtotal + 10.00) * 0.06;
+                                            // Calculate sales taxes (6% of subtotal)
+                                            $salesTaxes = ($subtotal + 10.00) * 0.06;
                                         ?>
                                         <tr>
                                             <td>Sales Taxes (6%) (RM):</td>
@@ -389,15 +400,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                         <tr>
                                             <td style="font-size: 20px;"><strong>Total Payment Amount (RM):</strong></td>
                                             <?php
-                                            // Calculate total payment amount
-                                            $totalPaymentAmount = $subtotal + 10.00 + $salesTaxes; // Subtotal + Shipping Fee + Sales Taxes
+                                                // Calculate total payment amount
+                                                $totalPaymentAmount = $subtotal + 10.00 + $salesTaxes; // Subtotal + Shipping Fee + Sales Taxes
                                             ?>
                                             <td style="font-size: 20px;"><strong><?php echo number_format($totalPaymentAmount, 2); ?></strong></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div><!-- Row end -->
 
                         <!-- Confirm Payment Button -->
                         <div class="row justify-content-center mt-4">
@@ -405,13 +416,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                 <button type="submit" class="btn btn-primary" name="confirm_payment">Confirm Payment</button>
                             </div>
                         </div>
-                    </form>
+                    </form><!-- Buyer Information Form End-->
+                    
                 </div>
             </div>
         </div>
     </div>
-</body>
 
+    <!-- Footer -->
     <footer class="bg-body-secondary">
         <div class="container py-5">
             <div class="row align-items-center">
@@ -427,4 +439,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
             </div>
         </div>
     </footer>
+</body>
+
 </html>

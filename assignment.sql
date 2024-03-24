@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 23, 2024 at 10:25 PM
+-- Generation Time: Mar 24, 2024 at 04:57 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,14 +69,6 @@ CREATE TABLE `ordered_items` (
   `item_quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `ordered_items`
---
-
-INSERT INTO `ordered_items` (`order_item_id`, `payment_id`, `order_id`, `product_id`, `user_id`, `item_quantity`) VALUES
-(10, 631631, 7, 15, 1, 1),
-(11, 631631, 7, 16, 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -91,13 +83,6 @@ CREATE TABLE `orders` (
   `order_status` enum('pending','processing','shipped','delivered','cancelled') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `orders`
---
-
-INSERT INTO `orders` (`order_id`, `user_id`, `order_date`, `total_amount`, `order_status`) VALUES
-(7, 1, '2024-03-24 04:11:47', 242.74, 'processing');
-
 -- --------------------------------------------------------
 
 --
@@ -108,17 +93,16 @@ CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `fullname` varchar(50) NOT NULL,
+  `address` varchar(50) NOT NULL,
+  `zipcode` int(5) NOT NULL,
+  `city` varchar(50) NOT NULL,
+  `state` varchar(50) NOT NULL,
+  `phone_number` varchar(11) NOT NULL,
   `payment_datetime` datetime NOT NULL,
-  `total_payment_amount` int(50) NOT NULL,
-  `payment_method` varchar(50) NOT NULL
+  `payment_method` varchar(50) NOT NULL,
+  `total_payment_amount` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `payment`
---
-
-INSERT INTO `payment` (`payment_id`, `product_id`, `user_id`, `payment_datetime`, `total_payment_amount`, `payment_method`) VALUES
-(631631, 15, 1, '2024-03-23 21:11:47', 243, 'Debit/Credit Card');
 
 -- --------------------------------------------------------
 
@@ -195,7 +179,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `name`, `email`, `address`, `phone_number`, `zipcode`, `city`, `state`) VALUES
 (1, 'customer123', '$2y$10$/0uS4KyGj8uJS7aozeO9seWMGQKZkG8yorslPHC1I/av6GJIRbxdm', '', 'customer123@mail.com', '', '', '', '', ''),
-(5, 'testing123', '$2y$10$k5.HqC.4ueEf/LqUXsUcmOyTVQ190xijrc5EUtw59pdTwW6x/ghcq', 'Connie Tang Ming Xin', 'testing123@hotmail.com', 'Lot 6135, Lorong Permata 11, Vista Perdana Phase 2, 98000 Miri, Sarawak', '01111248294', '', '', '');
+(5, 'testing123', '$2y$10$k5.HqC.4ueEf/LqUXsUcmOyTVQ190xijrc5EUtw59pdTwW6x/ghcq', 'Connie Tang Ming Xin', 'testing123@hotmail.com', 'Lot 6135, Lorong Permata 11', '01111248294', '98000', 'Miri', 'Sarawak');
 
 --
 -- Indexes for dumped tables
@@ -266,7 +250,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -278,13 +262,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `ordered_items`
 --
 ALTER TABLE `ordered_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `payment`
