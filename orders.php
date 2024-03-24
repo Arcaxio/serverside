@@ -123,62 +123,76 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
         <h2 class="mb-3">Your Orders</h2>
         <div class="row">
             <div class="col-md-8">
+            
             <?php
-            foreach ($orders as $order){
-                $total=0;
-                ?>
-                <div class="card mb-3">
-                    <div class="card-body">
-                        
-                        
-                        <h5 class="card-title">Order # <?php echo $order['order_id'];?></h5>
-                        
-                        
-                        
-                        <p class="card-text">Date: <?php echo $order['order_date']?></p>
-                        <p class="card-text">Status: <?php echo $order['order_status']?> </p>
-                        <table class="table">
-                            <thead>
+            foreach ($orders as $order) {
+                $total = 0;
+            ?>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Order # <?php echo $order['order_id']; ?></h5>
+                    <p class="card-text">Date: <?php echo $order['order_date']; ?></p>
+                    <p class="card-text">Status: <?php echo $order['order_status']; ?> </p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th class="text-end" scope="col">Price</th>
+                                <th class="text-end" scope="col">Quantity</th>
+                                <th class="text-end" scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            foreach($order['products'] as $product) {
+                                ?>
                                 <tr>
-                                    <th scope="col">Product</th>
-                                    <th class="text-end" scope="col">Price</th>
-                                    <th class="text-end" scope="col">Quantity</th>
-                                    <th class="text-end" scope="col">Total</th>
+                                    <td><?php echo $product['product_name']; ?></td>
+                                    <td class="text-end">$<?php echo $product['price']; ?></td>
+                                    <td class="text-end"><?php echo $product['item_quantity']; ?></td>
+                                    <td class="text-end">$<?php echo ($product['price'] * $product['item_quantity']); ?></td>
                                 </tr>
-                            </thead>
-                            <tbody>
                                 <?php 
-                                foreach($order['products'] as $product){?>
-                                <tr>
-                                    <td><?php echo $product['product_name']?></td>
-                                    <td class="text-end">$<?php echo $product['price']?></td>
-                                    <td class="text-end"><?php echo $product['item_quantity']?></td>
-                                    <td class="text-end">$<?php echo ($product['price']*$product['item_quantity'])?></td>
-                                </tr>
-                                <?php $total+= $product['price']*$product['item_quantity'];}?>
-                                <tr>
-                                    <td>sheeping Fee:</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="text-end">$10</td>
-                                </tr>
-
-                                <tr><td>Sales Taxes (6%):</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="text-end">$<?php echo ($total+10)*0.06?></td></tr>
-
-                                    <tr><th>Total: </th>
-                                    <td></td>
-                                    <td></td>
-                                    <th class="text-end">$<?php echo $order['total_amount']?></th></tr>
-                            </tbody>
-                        </table>
-                        <button type="button" class="btn btn-primary">Cancel order</button>
-                        
-                    </div>
+                                $total += $product['price'] * $product['item_quantity'];
+                            }
+                            ?>
+                            <tr>
+                                <td>Shipping Fee:</td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-end">$10</td>
+                            </tr>
+                            <tr>
+                                <td>Sales Taxes (6%):</td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-end">$<?php echo ($total + 10) * 0.06; ?></td>
+                            </tr>
+                            <tr>
+                                <th>Total: </th>
+                                <td></td>
+                                <td></td>
+                                <th class="text-end">$<?php echo $order['total_amount']; ?></th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <?php 
+                    if($order['order_status'] == "pending" || $order['order_status'] == "processing") {
+                        ?>
+                        <a href="cancel_order.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-primary">Cancel order</a>
+                        <?php 
+                    } else {
+                        ?>
+                        <button type="button" class="btn btn-primary disabled">Cancel order</button>
+                        <?php 
+                    }
+                    ?>
                 </div>
-                <?php } ?>
+            </div>
+            <?php 
+            }
+            ?>
+            
             </div>
         </div>
     </div>
