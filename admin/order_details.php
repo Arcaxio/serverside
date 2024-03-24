@@ -11,10 +11,12 @@ $username = $_SESSION['username'];
 if (isset ($_GET['order_id'])) {
     $orderId = (int) $_GET['order_id'];
 
-    // Fetch order details
-    $stmt = $conn->prepare("SELECT orders.order_id, orders.order_date, orders.total_amount, orders.order_status, users.username 
+    // Fetch order details including user and buyer full name
+    $stmt = $conn->prepare("SELECT orders.order_id, orders.order_date, orders.total_amount, orders.order_status, users.username AS user_name, payment.fullname AS buyer_name
                             FROM orders 
                             JOIN users ON orders.user_id = users.user_id
+                            JOIN ordered_items ON orders.order_id = ordered_items.order_id
+                            JOIN payment ON ordered_items.payment_id = payment.payment_id
                             WHERE orders.order_id = ?");
     $stmt->bindParam(1, $orderId);
     $stmt->execute();
@@ -94,8 +96,11 @@ if (isset ($_GET['order_id'])) {
                         <p><strong>Order ID:</strong>
                             <?php echo $orderId; ?>
                         </p>
-                        <p><strong>Customer:</strong>
-                            <?php echo $orderDetails['username']; ?>
+                        <p><strong>Username:</strong>
+                            <?php echo $orderDetails['user_name']; ?>
+                        </p>
+                        <p><strong>Buyer Full Name:</strong>
+                            <?php echo $orderDetails['buyer_name']; ?>
                         </p>
                         <p><strong>Order Date:</strong>
                             <?php echo $orderDetails['order_date']; ?>
