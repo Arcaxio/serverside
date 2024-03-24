@@ -43,6 +43,20 @@ function getRevenueData($conn)
 
 // Call the function and pass the database connection object
 $revenueData = getRevenueData($conn);
+
+$stmt = $conn->prepare("SELECT COUNT(*) as totalOrders FROM orders");
+$stmt->execute();
+$orderData = $stmt->fetch();
+
+// Total Products
+$stmt = $conn->prepare("SELECT COUNT(*) as totalProducts FROM products");
+$stmt->execute();
+$productData = $stmt->fetch();
+
+// Total Users
+$stmt = $conn->prepare("SELECT COUNT(*) as totalUsers FROM users");
+$stmt->execute();
+$userData = $stmt->fetch();
 ?>
 
 <!DOCTYPE html>
@@ -51,8 +65,8 @@ $revenueData = getRevenueData($conn);
 <head>
   <title>Staff Home</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -64,7 +78,8 @@ $revenueData = getRevenueData($conn);
         <span class="ms-2 fs-4">Boom Inc</span>
       </div>
       <div class="mx-4">
-        <div class="p-3 border rounded rounded-3 bg-white" onclick="location.href='staff_home.php';" style="cursor: pointer;">
+        <div class="p-3 border rounded rounded-3 bg-white" onclick="location.href='staff_home.php';"
+          style="cursor: pointer;">
           <i class="bi bi-house-door me-3"></i>
           Home
         </div>
@@ -74,7 +89,7 @@ $revenueData = getRevenueData($conn);
         </div>
         <div class="p-3" onclick="location.href='products.php';" style="cursor: pointer;">
           <i class="bi bi-box-seam me-3"></i>
-          Product
+          Products
         </div>
         <?php if ($_SESSION['role'] == 'admin'): ?>
           <a href="register.php" class="my-3 btn btn-secondary">Register Manager</a>
@@ -98,7 +113,7 @@ $revenueData = getRevenueData($conn);
 
       <div class="bg-white p-4">
         <div class="row">
-          <div class="col-md-6 mb-4">
+          <div class="col-9">
             <div class="card">
               <div class="card-header bg-primary text-white">
                 Revenue This Month
@@ -138,15 +153,58 @@ $revenueData = getRevenueData($conn);
               </div>
             </div>
           </div>
-          <div class="col-md-6 mb-4">
-    <div class="text-muted">
-      <p><b>Total Sales Revenue: RM</b> <?php echo array_sum($revenueData['revenue']); ?></p>
-    </div>
-  </div>
+          <div class="col-3">
+            <div class="row row-cols-1 flex-column">
+              <div class="col pb-4">
+                <div class="card">
+                  <div class="card-body p-2">
+                    <h5 class="text-center">Total Sales Revenue</h5>
+                    <h3 class="text-center">
+                      RM
+                      <?php echo array_sum($revenueData['revenue']); ?>
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col pb-4">
+                <div class="card">
+                  <div class="card-body p-2">
+                    <h5 class="text-center">Total Orders</h5>
+                    <h3 class="text-center">
+                      <i class="bi bi-journal-text me-2 fs-3"></i>
+                      <?php echo $orderData['totalOrders']; ?>
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col pb-4">
+                <div class="card">
+                  <div class="card-body p-2">
+                    <h5 class="text-center">Total Products</h5>
+                    <h3 class="text-center">
+                    <i class="bi bi-box-seam me-2 fs-3"></i>
+                      <?php echo $productData['totalProducts']; ?>
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col pb-4">
+                <div class="card">
+                  <div class="card-body p-2">
+                    <h5 class="text-center">Total Users</h5>
+                    <h3 class="text-center">
+                    <i class="bi bi-person me-2 fs-3"></i>
+                      <?php echo $userData['totalUsers']; ?>
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   </div>
 </body>
 
