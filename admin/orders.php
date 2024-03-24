@@ -39,17 +39,14 @@ $orders = $stmt->fetchAll();
                     <i class="bi bi-house-door me-3"></i>
                     Home
                 </div>
-                <div class="p-3" onclick="location.href='orders.php';" style="cursor: pointer;">
+                <div class="p-3 border rounded rounded-3 bg-white" onclick="location.href='orders.php';"
+                    style="cursor: pointer;">
                     <i class="bi bi-cart me-3"></i>
                     Orders
                 </div>
                 <div class="p-3" onclick="location.href='products.php';" style="cursor: pointer;">
                     <i class="bi bi-box-seam me-3"></i>
-                    Product
-                </div>
-                <div class="p-3">
-                    <i class="bi bi-people me-3"></i>
-                    Customer
+                    Products
                 </div>
                 <?php if ($_SESSION['role'] == 'admin'): ?>
                     <a href="register.php" class="my-3 btn btn-secondary">Register Manager</a>

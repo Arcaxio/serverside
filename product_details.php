@@ -134,7 +134,7 @@ if (isset ($_GET['success'])) { ?>
                             </h4>
                         </div>
                     </div>
-                    <form method="POST" action="add_to_cart.php">
+                    <form method="POST" action="add_to_cart.php" onsubmit="return checkAndSubmit()">
                         <div class="row pt-3">
                             <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
                             <div class="col-4">
@@ -164,6 +164,49 @@ if (isset ($_GET['success'])) { ?>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login Required</h5>
+                </div>
+                <div class="modal-body">
+                    Please log in or register to add items to your cart.
+                </div>
+                <div class="modal-footer">
+                    <a href="customer/login.php" class="btn btn-primary">Login</a>
+                    <a href="customer/register.php" class="btn btn-secondary">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function checkLogin() {
+            <?php if (isset ($_SESSION['username'])) { ?>
+                // User is logged in
+                return true;
+            <?php } else { ?>
+                // User is not logged in
+                return false;
+            <?php } ?>
+        }
+    </script>
+    <script>
+        function checkAndSubmit() {
+            if (checkLogin()) {
+                // User is logged in, allow form submission
+                return true;
+            } else {
+                // User is not logged in, prevent default submission and show modal
+                $('#loginModal').modal('show');
+                return false;
+            }
+        }
+    </script>
+
 </body>
 
 <footer class="bg-body-secondary">
