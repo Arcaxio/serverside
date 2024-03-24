@@ -35,8 +35,8 @@
 
     // Fetch buyer's full name from the database based on order_id
     $buyer_stmt = $conn->prepare("SELECT payment.fullname FROM payment 
-        JOIN ordered_items ON payment.payment_id = ordered_items.payment_id
-        WHERE ordered_items.order_id = ?");
+        JOIN orders ON payment.payment_id = orders.payment_id
+        WHERE orders.order_id = ?");
     $buyer_stmt->bindParam(1, $orderId);
     $buyer_stmt->execute();
     $buyer_name = $buyer_stmt->fetchColumn();
@@ -107,6 +107,31 @@
         .carousel-control-prev {
             filter: invert(100%);
         }
+        .canceled{
+            background-color: #E0E0E0;
+
+        }
+        .table-c {
+        --bs-table-color-type: initial;
+        --bs-table-bg-type: initial;
+        --bs-table-color-state: initial;
+        --bs-table-bg-state: initial;
+        --bs-table-color: var(--bs-emphasis-color);
+        --bs-table-bg: #E0E0E0;
+        --bs-table-border-color: white;
+        --bs-table-accent-bg: transparent;
+        --bs-table-striped-color: var(--bs-emphasis-color);
+        --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
+        --bs-table-active-color: var(--bs-emphasis-color);
+        --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
+        --bs-table-hover-color: var(--bs-emphasis-color);
+        --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+        width: 100%;
+        margin-bottom: 1rem;
+        vertical-align: top;
+        border-color: var(--bs-table-border-color)
+    }
+
     </style>
 
 </head>
@@ -160,14 +185,14 @@
 
                             // Fetch buyer's full name from the database based on order_id
                             $buyer_stmt = $conn->prepare("SELECT payment.fullname FROM payment 
-                                                            JOIN ordered_items ON payment.payment_id = ordered_items.payment_id
-                                                            WHERE ordered_items.order_id = ?");
+                                                            JOIN orders ON payment.payment_id = orders.payment_id
+                                                            WHERE orders.order_id = ?");
                             $buyer_stmt->bindParam(1, $order['order_id']);
                             $buyer_stmt->execute();
                             $buyer_name = $buyer_stmt->fetchColumn();
                         ?>
                         <div class="card mb-3"><!-- Card Start -->
-                            <div class="card-body"><!-- Card body Start -->
+                            <div class="card-body <?php echo ($order['order_status'] == "cancelled") ? "canceled" : ""; ?>"><!-- Card body Start -->
                                 <div class="row">
                                         <h5 class="card-title">
                                             Order # <?php echo $order['order_id']; ?>
@@ -182,7 +207,7 @@
                                 </div>
                                 <p class="card-text">Date: <?php echo $order['order_date']; ?></p>
                                 <p class="card-text">Status: <?php echo $order['order_status']; ?> </p>
-                                <table class="table">
+                                <table class="table <?php echo ($order['order_status'] == "cancelled") ? "table-c" : ""; ?>">
                                     <!-- Table headers -->
                                     <thead>
                                         <tr>
@@ -224,8 +249,6 @@
                                 </table>
                                 <?php if($order['order_status'] == "pending" || $order['order_status'] == "processing") { ?>
                                     <button type="button" class="btn btn-outline-primary" onclick="confirmCancellation(<?php echo $order['order_id']; ?>)">Cancel order</button>
-                                    <?php } else { ?>
-                                        <button type="button" class="btn btn-outline-primary disabled">Cancel order</button>
                                     <?php } ?>
                         </div><!-- Card body End -->
                     </div> <!-- Card End -->

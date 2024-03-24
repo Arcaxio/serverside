@@ -124,9 +124,10 @@
                 $stmt->execute();
                 
 
-                $order_stmt = $conn->prepare("INSERT INTO orders (user_id, order_date, total_amount)VALUES(?,NOW(),?)");            
+                $order_stmt = $conn->prepare("INSERT INTO orders (user_id, order_date, total_amount,payment_id)VALUES(?,NOW(),?,?)");            
                 $order_stmt->bindParam(1,$userId);
                 $order_stmt->bindParam(2,$totalPaymentAmount);
+                $order_stmt->bindParam(3,$paymentId);
                 $order_stmt->execute();
 
                 $orderId = $conn->lastInsertId();
@@ -135,12 +136,11 @@
                     $productId = $item['product_id'];
                     $quantity = $item['quantity'];
 
-                    $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(payment_id, order_id, product_id, user_id, item_quantity)VALUES(?,?,?,?,?)");
-                    $order_item_stmt->bindParam(1,$paymentId);
-                    $order_item_stmt->bindParam(2,$orderId);
-                    $order_item_stmt->bindParam(3,$productId);
-                    $order_item_stmt->bindParam(4,$userId);
-                    $order_item_stmt->bindParam(5,$quantity);
+                    $order_item_stmt = $conn->prepare("INSERT INTO ordered_items( order_id, product_id, user_id, item_quantity)VALUES(?,?,?,?)");
+                    $order_item_stmt->bindParam(1,$orderId);
+                    $order_item_stmt->bindParam(2,$productId);
+                    $order_item_stmt->bindParam(3,$userId);
+                    $order_item_stmt->bindParam(4,$quantity);
                     $order_item_stmt->execute();
                 }
 
