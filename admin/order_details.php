@@ -56,21 +56,17 @@ if (isset ($_GET['order_id'])) {
                 </a>
             </div>
             <div class="mx-4">
-                <div class="p-3">
+                <div class="p-3" onclick="location.href='staff_home.php';" style="cursor: pointer;">
                     <i class="bi bi-house-door me-3"></i>
                     Home
                 </div>
                 <div class="p-3 border rounded rounded-3 bg-white" onclick="location.href='orders.php';" style="cursor: pointer;">
                     <i class="bi bi-cart me-3"></i>
-                    Order
+                    Orders
                 </div>
                 <div class="p-3" onclick="location.href='products.php';" style="cursor: pointer;">
                     <i class="bi bi-box-seam me-3"></i>
-                    Product
-                </div>
-                <div class="p-3">
-                    <i class="bi bi-people me-3"></i>
-                    Customer
+                    Products
                 </div>
                 <?php if ($_SESSION['role'] == 'admin'): ?>
                     <a href="register.php" class="my-3 btn btn-secondary">Register Manager</a>
@@ -135,7 +131,7 @@ if (isset ($_GET['order_id'])) {
                         </table>
                     </div>
 
-                    
+
                     <div id="status-update">
                         <div id="status-update">
                             <h3>Update Status</h3>
@@ -156,7 +152,7 @@ if (isset ($_GET['order_id'])) {
 
                     </div>
 
-                    
+
                 </div>
             </div>
         </div>
@@ -184,12 +180,12 @@ if (isset ($_GET['order_id'])) {
                 });
             });
             function showAlert() {
-            alert('Status updated successfully.');
-        }
-        
-            
+                alert('Status updated successfully.');
+            }
+
+
         });
-        
+
     </script>
 </body>
 

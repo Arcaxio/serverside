@@ -64,7 +64,7 @@ $revenueData = getRevenueData($conn);
         <span class="ms-2 fs-4">Boom Inc</span>
       </div>
       <div class="mx-4">
-        <div class="p-3" onclick="location.href='staff_home.php';" style="cursor: pointer;">
+        <div class="p-3 border rounded rounded-3 bg-white" onclick="location.href='staff_home.php';" style="cursor: pointer;">
           <i class="bi bi-house-door me-3"></i>
           Home
         </div>
@@ -75,10 +75,6 @@ $revenueData = getRevenueData($conn);
         <div class="p-3" onclick="location.href='products.php';" style="cursor: pointer;">
           <i class="bi bi-box-seam me-3"></i>
           Product
-        </div>
-        <div class="p-3">
-          <i class="bi bi-people me-3"></i>
-          Customer
         </div>
         <?php if ($_SESSION['role'] == 'admin'): ?>
           <a href="register.php" class="my-3 btn btn-secondary">Register Manager</a>
