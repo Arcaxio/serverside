@@ -43,37 +43,54 @@ $paymentId = mt_rand(100000, 999999);
 // Current date and time
 $paymentDatetime = date("Y-m-d H:i:s");
 
-// Fetch buyer information from customer table
+// Fetch buyer information from users table
 if ($userId !== null) {
     $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
     $stmt->bindParam(1, $userId);
     $stmt->execute();
-    $customer = $stmt->fetchAll();
+    $users = $stmt->fetchAll();
 }
 
 // Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
-    $address = trim($_POST['buyer_address']);
-    $phone = trim($_POST['buyer_phone_number']);
     $buyerName = trim($_POST['buyer_name']);
+    $address = trim($_POST['buyer_address']);
+    $phoneNumber = trim($_POST['buyer_phone_number']);
+
+    // Extract zipcode, city, and state from the address
+    preg_match('/(\d{5})\s([^,]+),\s([^,]+)$/', $address, $addressMatches);
+    if (count($addressMatches) == 4) {
+        $zipCode = $addressMatches[1];
+        $city = $addressMatches[2];
+        $state = $addressMatches[3];
+    } else {
+        // Handle invalid address format
+        echo '<script>alert("Invalid address format. Please enter the address in the correct format.");</script>';
+        // You may choose to redirect the user back to the form or perform other actions
+        exit(); // Stop further execution
+    }
 
     $salesTaxes = ($subtotal + 10.00) * 0.06;
     // Calculate total payment amount
     $totalPaymentAmount = $subtotal + 10.00 + $salesTaxes; // Subtotal + Shipping Fee + Sales Taxes
     
     // Validate address, phone, and buyer name
-    if (empty($buyerName) || empty($address) || empty($phone)) {
+    if (empty($buyerName) || empty($address) || empty($phoneNumber)) {
         echo '<script>alert("Please fill in all the required fields.");</script>';
-    } elseif (!isValidPhoneNumber($phone)) {
+    } elseif (!isValidPhoneNumber($phoneNumber)) {
         echo '<script>alert("Please provide a valid phone number.");</script>';
     } else {
         // Proceed with payment confirmation
-        // Update customer information
-        $stmt = $conn->prepare("UPDATE users SET name = ?, address = ?, phone_number = ? WHERE user_id = ?");
+        // Update users information
+        $stmt = $conn->prepare("UPDATE users SET name = ?, address = ?, phone_number = ?, zipcode = ?, city = ?, state = ? WHERE user_id = ?");
         $stmt->bindParam(1, $buyerName);
         $stmt->bindParam(2, $address);
-        $stmt->bindParam(3, $phone);
-        $stmt->bindParam(4, $userId);
+        $stmt->bindParam(3, $phoneNumber);
+        $stmt->bindParam(4, $zipCode);
+        $stmt->bindParam(5, $city);
+        $stmt->bindParam(6, $state);
+        $stmt->bindParam(7, $userId);
+        $stmt->execute();
 
         // Insert payment details into payment table
         $paymentMethod = $_POST['payment_method']; // Assuming payment method is selected in the form
@@ -132,44 +149,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
     }
 }
 
-function isValidPhoneNumber($phone) {
-    // Validate phone number format (assuming 11-digit phone number)
-    $phonePattern = '/^\d{11}$/'; // Assumes 11-digit phone number
-    return preg_match($phonePattern, $phone);
-}
-
-// Delete cart items after successful payment
-if (isset($_GET['success']) && $_GET['success'] == 'true') {
-    $order_stmt = $conn->prepare("INSERT INTO orders (user_id, order_date, total_amount)VALUES(?,NOW(),?)");            
-            $order_stmt->bindParam(1,$userId);
-            $order_stmt->bindParam(2,$totalPaymentAmount);
-            $order_stmt->execute();
-
-            $orderId = $conn->lastInsertId();
-
-            foreach($cartItems as $item){
-                $productId = $item['product_id'];
-                $quantity = $item['quantity'];
-
-                $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(payment_id, order_id, product_id, user_id)VALUES(?,?,?,?)");
-                $order_item_stmt->bindParam(1,$paymentId);
-                $order_item_stmt->bindParam(2,$orderId);
-                $order_item_stmt->bindParam(3,$productId);
-                $order_item_stmt->bindParam(4,$userId);
-                $order_item_stmt->execute();
-            }
-
-    // Delete cart items associated with the user
-
-    $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
-    $stmt->bindParam(1, $userId);
-    if ($stmt->execute()) {
-        echo "Cart items deleted successfully."; // Debugging statement
-
-         
-    } else {
-        echo "Error deleting cart items: " . $stmt->errorInfo()[2]; // Output any errors
-    }
+function isValidPhoneNumber($phoneNumber) {
+    // Validate phone number format (assuming 10 or 11-digit phone number)
+    $phoneNumberPattern = '/^\d{10,11}$/'; // Accepts 10 or 11-digit phone number
+    return preg_match($phoneNumberPattern, $phoneNumber);
 }
 ?>
 
@@ -293,19 +276,19 @@ if (isset($_GET['success']) && $_GET['success'] == 'true') {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="buyer_name">Full Name:</label>
-                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : $customer[0]['name']; ?>" required>
+                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : $users[0]['name']; ?>" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="buyer_email">Email:</label>
-                                    <input type="email" class="form-control" id="buyer_email" value="<?php echo isset($customer[0]['email']) ? $customer[0]['email'] : '-NA-'; ?>" readonly>
+                                    <input type="email" class="form-control" id="buyer_email" value="<?php echo isset($users[0]['email']) ? $users[0]['email'] : '-NA-'; ?>" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="buyer_address">Address:</label>
-                                    <input type="text" class="form-control" name="buyer_address" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : $customer[0]['address']; ?>" required>
+                                    <input type="text" class="form-control" name="buyer_address" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : $users[0]['address']; ?>" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="buyer_phone_number">Phone Number:</label>
-                                    <input type="tel" class="form-control" name="buyer_phone_number" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : $customer[0]['phone_number']; ?>" required>
+                                    <input type="tel" class="form-control" name="buyer_phone_number" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : $users[0]['phone_number']; ?>" required>
                                 </div>
                             </div>
                         </div>
