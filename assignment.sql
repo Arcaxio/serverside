@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 24, 2024 at 04:57 PM
+-- Generation Time: Mar 24, 2024 at 05:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -62,12 +62,20 @@ INSERT INTO `categories` (`category_id`, `category_name`) VALUES
 
 CREATE TABLE `ordered_items` (
   `order_item_id` int(11) NOT NULL,
-  `payment_id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `item_quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ordered_items`
+--
+
+INSERT INTO `ordered_items` (`order_item_id`, `order_id`, `product_id`, `user_id`, `item_quantity`) VALUES
+(41, 39, 15, 1, 1),
+(42, 40, 15, 1, 1),
+(43, 40, 16, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -80,8 +88,19 @@ CREATE TABLE `orders` (
   `user_id` int(11) NOT NULL,
   `order_date` datetime NOT NULL,
   `total_amount` decimal(10,2) NOT NULL,
-  `order_status` enum('pending','processing','shipped','delivered','cancelled') NOT NULL
+  `order_status` enum('pending','processing','shipped','delivered','cancelled') NOT NULL,
+  `payment_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `user_id`, `order_date`, `total_amount`, `order_status`, `payment_id`) VALUES
+(37, 1, '2024-03-25 00:12:47', 136.74, 'pending', 337097),
+(38, 1, '2024-03-25 00:13:14', 136.74, 'pending', 440896),
+(39, 1, '2024-03-25 00:13:26', 136.74, 'cancelled', 345809),
+(40, 1, '2024-03-25 00:24:15', 242.74, 'pending', 463308);
 
 -- --------------------------------------------------------
 
@@ -103,6 +122,17 @@ CREATE TABLE `payment` (
   `payment_method` varchar(50) NOT NULL,
   `total_payment_amount` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `product_id`, `user_id`, `fullname`, `address`, `zipcode`, `city`, `state`, `phone_number`, `payment_datetime`, `payment_method`, `total_payment_amount`) VALUES
+(337097, 15, 1, 'customer123', '22, Lorong Permata 11', 12344, 'Kodiang', 'Kedah', '01234567890', '2024-03-24 17:12:47', 'Debit/Credit Card', 136.74),
+(345809, 15, 1, 'Tay Zhi Hui', '22, Lorong Permata 11', 12344, 'Melaka', 'Melaka', '01234567890', '2024-03-24 17:13:26', 'Debit/Credit Card', 136.74),
+(440896, 15, 1, 'Tay Zhi Hui', '22, Lorong Permata 11', 12344, 'Melaka', 'Melaka', '01234567890', '2024-03-24 17:13:14', 'Debit/Credit Card', 136.74),
+(463308, 15, 1, 'Tay Zhi Hui', '22, Lorong Permata 11', 12344, 'Merlimau', 'Melaka', '01234567890', '2024-03-24 17:24:15', 'Debit/Credit Card', 242.74),
+(838475, 15, 1, 'customer123', '22, Lorong Permata 11', 12344, 'Kodiang', 'Kedah', '01234567890', '2024-03-24 17:12:03', 'Debit/Credit Card', 136.74);
 
 -- --------------------------------------------------------
 
@@ -204,7 +234,6 @@ ALTER TABLE `categories`
 --
 ALTER TABLE `ordered_items`
   ADD PRIMARY KEY (`order_item_id`),
-  ADD KEY `ordered_payment_id` (`payment_id`),
   ADD KEY `ordered_order_id` (`order_id`),
   ADD KEY `ordered_user_id` (`user_id`),
   ADD KEY `ordered_product_id` (`product_id`);
@@ -250,7 +279,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -262,13 +291,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `ordered_items`
 --
 ALTER TABLE `ordered_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `payment`
@@ -310,9 +339,7 @@ ALTER TABLE `cart`
 --
 ALTER TABLE `ordered_items`
   ADD CONSTRAINT `ordered_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
-  ADD CONSTRAINT `ordered_payment_id` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`payment_id`),
-  ADD CONSTRAINT `ordered_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
-  ADD CONSTRAINT `ordered_user_id` FOREIGN KEY (`user_id`) REFERENCES `payment` (`user_id`);
+  ADD CONSTRAINT `ordered_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 
 --
 -- Constraints for table `payment`

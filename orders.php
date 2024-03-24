@@ -49,7 +49,7 @@
             $orderId = $result['order_id'];
             if (!isset($orders[$orderId])) {
                 $date = new DateTime($result['order_date']);
-                $formattedDate = $date->format('F j, Y');
+                $formattedDate = $date->format('F j, Y H:i:s');
                 $orders[$orderId] = [
                     'order_id' => $orderId,
                     'order_date' => $formattedDate,
