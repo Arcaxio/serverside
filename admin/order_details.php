@@ -8,32 +8,37 @@ if (!isset ($_SESSION['staff_id'])) {
 
 $username = $_SESSION['username'];
 
-if (isset ($_GET['order_id'])) {
-    $orderId = (int) $_GET['order_id'];
+if (isset($_GET['order_id'])) {
+    $orderId = $_GET['order_id'];
 
     // Fetch order details including user and buyer full name
     $stmt = $conn->prepare("SELECT orders.order_id, orders.order_date, orders.total_amount, orders.order_status, users.username AS user_name, payment.fullname AS buyer_name
-                            FROM orders 
-                            JOIN users ON orders.user_id = users.user_id
-                            JOIN ordered_items ON orders.order_id = ordered_items.order_id
-                            JOIN payment ON ordered_items.payment_id = payment.payment_id
-                            WHERE orders.order_id = ?");
+                        FROM orders 
+                        JOIN users ON orders.user_id = users.user_id
+                        JOIN ordered_items ON orders.order_id = ordered_items.order_id
+                        JOIN payment ON orders.payment_id = payment.payment_id
+                        WHERE orders.order_id = ?");
     $stmt->bindParam(1, $orderId);
     $stmt->execute();
 
-    $orderDetails = $stmt->fetch();
+    $orderDetails = $stmt->fetch(); // Use fetch() instead of fetchAll()
 
-    // Fetch order items
-    $stmt = $conn->prepare("SELECT oi.order_item_id, oi.item_quantity, p.product_name, p.price
-                            FROM ordered_items oi
-                            JOIN products p ON oi.product_id = p.product_id
-                            WHERE oi.order_id = ?");
-    $stmt->bindParam(1, $orderId);
-    $stmt->execute();
+    if ($orderDetails) {
+        // Fetch order items
+        $stmt = $conn->prepare("SELECT oi.order_item_id, oi.item_quantity, p.product_name, p.price
+            FROM ordered_items oi
+            JOIN products p ON oi.product_id = p.product_id
+            WHERE oi.order_id = ?");
+        $stmt->bindParam(1, $orderId);
+        $stmt->execute();
 
-    $orderItems = $stmt->fetchAll();
-} else {
-    // Handle missing order_id
+        $orderItems = $stmt->fetchAll();
+    } else {
+        // Handle the case where no order details are found for the given order ID
+        // For example, you can redirect the user back to the orders page with an error message
+        // header('Location: orders.php?error=Order%20not%20found');
+        // exit();
+    }
 }
 ?>
 

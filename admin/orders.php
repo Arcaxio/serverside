@@ -12,9 +12,9 @@ $username = $_SESSION['username'];
 $stmt = $conn->prepare("SELECT orders.order_id, users.username AS user_name, payment.fullname AS buyer_name, orders.order_date, orders.total_amount, orders.order_status
                         FROM orders 
                         JOIN users ON orders.user_id = users.user_id
-                        JOIN ordered_items ON orders.order_id = ordered_items.order_id
-                        JOIN payment ON ordered_items.payment_id = payment.payment_id
+                        JOIN payment ON orders.payment_id = payment.payment_id
                         ORDER BY orders.order_date DESC");
+
 $stmt->execute();
 $orders = $stmt->fetchAll();
 ?>

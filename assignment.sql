@@ -62,6 +62,7 @@ INSERT INTO `categories` (`category_id`, `category_name`) VALUES
 
 CREATE TABLE `ordered_items` (
   `order_item_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -235,6 +236,7 @@ ALTER TABLE `categories`
 ALTER TABLE `ordered_items`
   ADD PRIMARY KEY (`order_item_id`),
   ADD KEY `ordered_order_id` (`order_id`),
+  ADD KEY `ordered_payment_id` (`payment_id`),
   ADD KEY `ordered_user_id` (`user_id`),
   ADD KEY `ordered_product_id` (`product_id`);
 
