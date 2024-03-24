@@ -37,7 +37,7 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
     $order_stmt->execute();
     $results = $order_stmt->fetchAll();
 
-
+    // restructure results
     foreach ($results as $result) {
         $orderId = $result['order_id'];
         if (!isset($orders[$orderId])) {
@@ -97,11 +97,35 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
         .carousel-control-prev {
             filter: invert(100%);
         }
+        .canceled{
+            background: #E0E0E0 !important;
+        }
+        .table-c {
+            --bs-table-color-type: initial;
+            --bs-table-bg-type: initial;
+            --bs-table-color-state: initial;
+            --bs-table-bg-state: initial;
+            --bs-table-color: var(--bs-emphasis-color);
+            --bs-table-bg: #21252900;
+            --bs-table-border-color: white;
+            --bs-table-accent-bg: transparent;
+            --bs-table-striped-color: var(--bs-emphasis-color);
+            --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
+            --bs-table-active-color: var(--bs-emphasis-color);
+            --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
+            --bs-table-hover-color: var(--bs-emphasis-color);
+            --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+            width: 100%;
+            margin-bottom: 1rem;
+            vertical-align: top;
+            border-color: var(--bs-table-border-color)
+        }
+
     </style>
 </head>
 
 <body>
-<header class="header sticky-top py-3 bg-black">
+    <header class="header sticky-top py-3 bg-black">
         <nav class="container d-flex justify-content-between align-items-center">
             <div class="text-light" onclick="location.href='index.php';" style="cursor: pointer;">
                 <i class="bi bi-app-indicator fs-3 me-3"></i>
@@ -138,7 +162,8 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
     </header>
 
     <div class="container mt-3">
-    <?php
+        <?php
+        // If user have placed order
         if(!empty($orders)){?>
         <h2 class="mb-3 pt-3">Your Orders</h2>
         <div class="row">
@@ -147,13 +172,14 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
             <?php
             foreach ($orders as $order) {
                 $total = 0;
+               
             ?>
             <div class="card mb-3">
-                <div class="card-body">
+                <div class="card-body <?php echo ($order['order_status'] == "cancelled") ? "canceled" : ""; ?>">
                     <h5 class="card-title">Order ID: # <?php echo $order['order_id']; ?></h5>
                     <p class="card-text">Date: <?php echo $order['order_date']; ?></p>
                     <p class="card-text">Status: <?php echo $order['order_status']; ?> </p>
-                    <table class="table">
+                    <table class="table <?php echo ($order['order_status'] == "cancelled") ? "table-c" : ""; ?>">
                         <thead>
                             <tr>
                                 <th scope="col">Product</th>
@@ -197,30 +223,31 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
                         </tbody>
                     </table>
                     <?php 
-                    if($order['order_status'] == "pending" || $order['order_status'] == "processing") {
-                        ?>
- <button type="button" class="btn btn-outline-primary" onclick="confirmCancellation(<?php echo $order['order_id']; ?>)">Cancel order</button>                        <?php 
-                    } else {
-                        ?>
-                        <button type="button" class="btn btn-outline-primary disabled">Cancel order</button>
-                        <?php 
-                    }
+                        if($order['order_status'] == "pending" || $order['order_status'] == "processing") {
                     ?>
+                        <button type="button" class="btn btn-primary" onclick="confirmCancellation(<?php echo $order['order_id']; ?>)">Cancel order</button>                        
+                        <?php 
+                            } else {
+                        ?>
+                        <!-- <button type="button" class="btn btn-outline-primary disabled">Cancel order</button> -->
+                        <?php 
+                        }
+                        ?>
+                    </div>
                 </div>
-            </div>
             <?php 
             }
         }
+        // If user havent placed order
         else {?>
             <h2 class="mb-3 pt-3">Your Order is Empty</h2>
             <a class="btn btn-outline-primary m-3 p-3" href="products.php">Continue Shopping</a>
             <h3 class="mt-3 mb-3"> Discover our irresistible range of products</h3>
             <div id="carouselExampleControls" class="carousel slide m-3 col-6" data-bs-ride="carousel">
-                
                 <div class="carousel-inner">
-                <div class="carousel-item active">
-      <img src="images/premium_case.jpg" alt="Los Angeles" class="d-block w-100">
-    </div>
+                    <div class="carousel-item active">
+                        <img src="images/premium_case.jpg" alt="Los Angeles" class="d-block w-100">
+                    </div>
                     <?php $stmt = $conn->query("SELECT * FROM products LIMIT 8");
                         while ($row = $stmt->fetch()) { ?>
 
@@ -240,20 +267,20 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
                                     ?>" class="d-block w-100" alt="...">
                                 </a>
                             </div>
-                        <?php
+                    <?php
                         }
-                        ?>
+                    ?>
     
                 </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
         <?php
             }
         ?>
