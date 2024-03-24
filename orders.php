@@ -61,6 +61,17 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
     }
 }
 ?>
+<script>
+        function confirmCancellation(orderId) {
+            // Display a confirmation dialog
+            var confirmation = confirm("Are you sure to cancel order?");
+            
+            // If the user confirms, redirect to cancel_order.php with the order_id
+            if (confirmation) {
+                window.location.href = "cancel_order.php?order_id=" + orderId;
+            }
+        }
+    </script>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -75,6 +86,18 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+    <style>
+        img {
+            height: 350px;
+            width: 350px;
+            object-fit: scale-down;
+        }
+        .carousel-control-next,
+        .carousel-control-prev {
+            filter: invert(100%);
+        }
+    </style>
 </head>
 
 <body>
@@ -115,7 +138,9 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
     </header>
 
     <div class="container mt-3">
-        <h2 class="mb-3">Your Orders</h2>
+    <?php
+        if(!empty($orders)){?>
+        <h2 class="mb-3 pt-3">Your Orders</h2>
         <div class="row">
             <div class="col-md-8">
             
@@ -155,13 +180,13 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
                                 <td>Shipping Fee:</td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-end">$10</td>
+                                <td class="text-end">$10.00</td>
                             </tr>
                             <tr>
                                 <td>Sales Taxes (6%):</td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-end">$<?php echo ($total + 10) * 0.06; ?></td>
+                                <td class="text-end">$<?php echo number_format(($total + 10) * 0.06,2); ?></td>
                             </tr>
                             <tr>
                                 <th>Total: </th>
@@ -174,11 +199,10 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
                     <?php 
                     if($order['order_status'] == "pending" || $order['order_status'] == "processing") {
                         ?>
-                        <a href="cancel_order.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-primary">Cancel order</a>
-                        <?php 
+ <button type="button" class="btn btn-outline-primary" onclick="confirmCancellation(<?php echo $order['order_id']; ?>)">Cancel order</button>                        <?php 
                     } else {
                         ?>
-                        <button type="button" class="btn btn-primary disabled">Cancel order</button>
+                        <button type="button" class="btn btn-outline-primary disabled">Cancel order</button>
                         <?php 
                     }
                     ?>
@@ -186,7 +210,53 @@ if ($order_stmt) { // Only attempt execution if the statement was prepared
             </div>
             <?php 
             }
-            ?>
+        }
+        else {?>
+            <h2 class="mb-3 pt-3">Your Order is Empty</h2>
+            <a class="btn btn-outline-primary m-3 p-3" href="products.php">Continue Shopping</a>
+            <h3 class="mt-3 mb-3"> Discover our irresistible range of products</h3>
+            <div id="carouselExampleControls" class="carousel slide m-3 col-6" data-bs-ride="carousel">
+                
+                <div class="carousel-inner">
+                <div class="carousel-item active">
+      <img src="images/premium_case.jpg" alt="Los Angeles" class="d-block w-100">
+    </div>
+                    <?php $stmt = $conn->query("SELECT * FROM products LIMIT 8");
+                        while ($row = $stmt->fetch()) { ?>
+
+                            <div class="carousel-item ">
+                                <a href="product_details.php?id=<?php echo $row['product_id']?>">
+                                <img src="<?php
+                                    $imagePath = $row['image_path'];
+
+                                    // Check if the image path starts with "http"
+                                    if (strpos($imagePath, 'http') === 0) {
+                                        // Image is from external URL, use as is
+                                        echo $finalImagePath = $imagePath;
+                                    } else {
+                                        // Local image, prepend "images/"
+                                        echo $finalImagePath = 'images/' . $imagePath;
+                                    }
+                                    ?>" class="d-block w-100" alt="...">
+                                </a>
+                            </div>
+                        <?php
+                        }
+                        ?>
+    
+                </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <?php
+            }
+        ?>
             
             </div>
         </div>

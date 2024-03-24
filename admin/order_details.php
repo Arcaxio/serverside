@@ -135,6 +135,7 @@ if (isset ($_GET['order_id'])) {
                         </table>
                     </div>
 
+                    
                     <div id="status-update">
                         <div id="status-update">
                             <h3>Update Status</h3>
@@ -147,11 +148,15 @@ if (isset ($_GET['order_id'])) {
                                     <option value="delivered" <?php echo ($orderDetails['order_status'] == 'delivered') ? 'selected' : ''; ?>>Delivered</option>
                                     <option value="cancelled" <?php echo ($orderDetails['order_status'] == 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
                                 </select>
-                                <button type="submit" class="btn btn-primary mt-3">Update</button>
+                                <button type="submit" class="btn btn-outline-primary mt-3">Update</button>
+                                <a href="orders.php" class="btn btn-outline-primary mt-3">Back</a>
+
                             </form>
                         </div>
 
                     </div>
+
+                    
                 </div>
             </div>
         </div>
@@ -171,14 +176,20 @@ if (isset ($_GET['order_id'])) {
                     data: formData,
                     success: function (response) {
                         console.log(response);
-                        // Optionally, update the displayed status text on the page
+                        showAlert();
                     },
                     error: function (error) {
                         console.error('Error updating status:', error);
                     }
                 });
             });
+            function showAlert() {
+            alert('Status updated successfully.');
+        }
+        
+            
         });
+        
     </script>
 </body>
 
