@@ -175,7 +175,7 @@ if ($stmt) { // Only attempt execution if the statement was prepared
                                 <span id="total"></span>
                             </li>
                         </ul>
-                        <a href="checkout.php" class="btn btn-primary btn-block mt-3">Proceed to Checkout</a>
+                        <a href="checkout.php" id="proceedToCheckoutBtn" class="btn btn-primary btn-block mt-3 disabled">Proceed to Checkout</a>
                     </div>
                 </div>
             </div>
@@ -198,6 +198,17 @@ if ($stmt) { // Only attempt execution if the statement was prepared
             </div>
         </div>
     </footer>
+
+    <!-- Display "No items in cart!" when there is no item in cart -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="noItemsToast" class="toast hide align-items-center text-white bg-danger border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex justify-content-between align-items-center">
+                <h6 class="m-0 ms-2">No items in cart!</h6>
+                <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 
     <script>
         function calculateTotals() {
@@ -224,6 +235,36 @@ if ($stmt) { // Only attempt execution if the statement was prepared
 
         // Call the function to calculate totals when the page loads
         window.onload = calculateTotals; 
+        
+        // Function to check if there are any items in the cart
+        function checkCartItems() {
+            // Get the table body element
+            const cartTableBody = document.querySelector('tbody');
+            
+            // Get the "Proceed to Checkout" button
+            const proceedToCheckoutBtn = document.getElementById('proceedToCheckoutBtn');
+            
+            // Check if there are any rows in the table body
+            if (cartTableBody.rows.length > 0) {
+                // Enable the button if there are items in the cart
+                proceedToCheckoutBtn.classList.remove('disabled');
+            } else {
+                // Disable the button if there are no items in the cart
+                proceedToCheckoutBtn.classList.add('disabled');
+                // Show the toast message for no items in cart
+                showNoItemsToast();
+            }
+        }
+        
+        // Function to show the "No items in cart!" toast message
+        function showNoItemsToast() {
+            var noItemsToast = new bootstrap.Toast(document.getElementById('noItemsToast'));
+            noItemsToast.show();
+        }
+        
+        // Call the function initially
+        checkCartItems();
+
     </script>
 </body>
 
