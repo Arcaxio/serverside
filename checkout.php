@@ -276,7 +276,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                 <!-- Full Name -->
                                 <div class="form-group">
                                     <label for="buyer_name">Full Name:</label>
-                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" placeholder="e.g: Connie Tang Ming Xin" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : $users[0]['name']; ?>" required>
+                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" placeholder="e.g: Full Name (as per IC/Passport)" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : $users[0]['name']; ?>" required>
                                 </div>
 
                                 <!-- Email -->
@@ -288,7 +288,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                 <!-- Address -->
                                 <div class="form-group">
                                     <label for="buyer_address">Address:</label>
-                                    <input type="text" class="form-control" name="buyer_address" placeholder="e.g: (House number), (Street), (District), (Cipcode City), (State)" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : $users[0]['address']; ?>" required>
+                                    <input type="text" class="form-control" name="buyer_address" placeholder="e.g: (House/apartment/flat number), (Street)" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : $users[0]['address']; ?>" required>
                                 </div>
 
                                 <div class="row">
@@ -336,7 +336,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="buyer_zipcode">Zip Code:</label>
-                                            <input type="text" class="form-control" name="buyer_zipcode" placeholder="e.g: 98000" pattern="\d{5}" value="<?php echo isset($_POST['buyer_zipcode']) ? $_POST['buyer_zipcode'] : $users[0]['zipcode']; ?>" required>
+                                            <input type="text" class="form-control" name="buyer_zipcode" placeholder="e.g: 12345" pattern="\d{5}" value="<?php echo isset($_POST['buyer_zipcode']) ? $_POST['buyer_zipcode'] : $users[0]['zipcode']; ?>" required>
                                         </div>
                                     </div>
                                 </div>
@@ -344,7 +344,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
                                 <!-- Phone Number -->
                                 <div class="form-group">
                                     <label for="buyer_phone_number">Phone Number:</label>
-                                    <input type="tel" class="form-control" name="buyer_phone_number" placeholder="e.g: 01111248294"pattern="\d{10,11}" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : $users[0]['phone_number']; ?>" required>
+                                    <input type="tel" class="form-control" name="buyer_phone_number" placeholder="e.g: 0123456789"pattern="\d{10,11}" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : $users[0]['phone_number']; ?>" required>
                                 </div>
                             </div>
                         </div>
