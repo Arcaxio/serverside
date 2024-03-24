@@ -1,7 +1,9 @@
 <?php
+// Step 1: Include necessary files and start the session
 include 'includes/db_connect.php';
 session_start();
 
+// Step 2: Retrieve the user ID if the username is set in the session
 $userId = null;
 if (isset ($_SESSION['username'])) {
     $username = $_SESSION['username'];
@@ -17,7 +19,11 @@ if (isset ($_SESSION['username'])) {
     $username = null;  // Set a default, or perform other actions if needed
 }
 
-// Fetch cart items
+// Step 3: Generate a random payment ID and get the current date and time
+$paymentId = mt_rand(100000, 999999);
+$paymentDatetime = date("Y-m-d H:i:s");
+
+// Step 4: Fetch cart items and calculate subtotal if the user ID is not null
 $cartItems = [];
 $subtotal = 0;
 $salesTaxes = 0;
@@ -37,13 +43,7 @@ if ($userId !== null) {
     }
 }
 
-// Generate random payment ID
-$paymentId = mt_rand(100000, 999999);
-
-// Current date and time
-$paymentDatetime = date("Y-m-d H:i:s");
-
-// Fetch buyer information from users table
+// Step 5: Fetch buyer information from the users table if the user ID is not null
 if ($userId !== null) {
     $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
     $stmt->bindParam(1, $userId);
@@ -51,31 +51,36 @@ if ($userId !== null) {
     $users = $stmt->fetchAll();
 }
 
-// Process form submission
+// Step 6: Parse the JSON data to get states and cities
+// Include the JSON file
+$citiesJson = file_get_contents('cities.json');
+$citiesData = json_decode($citiesJson, true);
+
+// Fetch states from the JSON data
+$states = array_keys($citiesData);
+
+// Step 8: Define a function to validate phone numbers
+function isValidPhoneNumber($phoneNumber) {
+    // Validate phone number format (assuming 10 or 11-digit phone number)
+    $phoneNumberPattern = '/^\d{10,11}$/'; // Accepts 10 or 11-digit phone number
+    return preg_match($phoneNumberPattern, $phoneNumber);
+}
+
+// Step 9: Process form submission and handle payment confirmation
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
     $buyerName = trim($_POST['buyer_name']);
     $address = trim($_POST['buyer_address']);
     $phoneNumber = trim($_POST['buyer_phone_number']);
-
-    // Extract zipcode, city, and state from the address
-    preg_match('/(\d{5})\s([^,]+),\s([^,]+)$/', $address, $addressMatches);
-    if (count($addressMatches) == 4) {
-        $zipCode = $addressMatches[1];
-        $city = $addressMatches[2];
-        $state = $addressMatches[3];
-    } else {
-        // Handle invalid address format
-        echo '<script>alert("Invalid address format. Please enter the address in the correct format.");</script>';
-        // You may choose to redirect the user back to the form or perform other actions
-        exit(); // Stop further execution
-    }
+    $zipCode = trim($_POST['buyer_zipcode']);
+    $city = trim($_POST['buyer_city']);
+    $state = trim($_POST['buyer_state']);
 
     $salesTaxes = ($subtotal + 10.00) * 0.06;
     // Calculate total payment amount
     $totalPaymentAmount = $subtotal + 10.00 + $salesTaxes; // Subtotal + Shipping Fee + Sales Taxes
     
-    // Validate address, phone, and buyer name
-    if (empty($buyerName) || empty($address) || empty($phoneNumber)) {
+    // Validate buyer name, address, phone number, zipcode, city, and state
+    if (empty($buyerName) || empty($address) || empty($phoneNumber) || empty($zipCode) || empty($city) || empty($state)) {
         echo '<script>alert("Please fill in all the required fields.");</script>';
     } elseif (!isValidPhoneNumber($phoneNumber)) {
         echo '<script>alert("Please provide a valid phone number.");</script>';
@@ -147,12 +152,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
             echo "Error: No cart items found for the user.";
         }
     }
-}
-
-function isValidPhoneNumber($phoneNumber) {
-    // Validate phone number format (assuming 10 or 11-digit phone number)
-    $phoneNumberPattern = '/^\d{10,11}$/'; // Accepts 10 or 11-digit phone number
-    return preg_match($phoneNumberPattern, $phoneNumber);
 }
 ?>
 
@@ -273,22 +272,79 @@ function isValidPhoneNumber($phoneNumber) {
                         <!-- Buyer Information Form -->
                         <h3 class="card-title mt-4">Buyer Information</h3>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col">
+                                <!-- Full Name -->
                                 <div class="form-group">
                                     <label for="buyer_name">Full Name:</label>
-                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : $users[0]['name']; ?>" required>
+                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" placeholder="e.g: Connie Tang Ming Xin" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : $users[0]['name']; ?>" required>
                                 </div>
+
+                                <!-- Email -->
                                 <div class="form-group">
                                     <label for="buyer_email">Email:</label>
                                     <input type="email" class="form-control" id="buyer_email" value="<?php echo isset($users[0]['email']) ? $users[0]['email'] : '-NA-'; ?>" readonly>
                                 </div>
+
+                                <!-- Address -->
                                 <div class="form-group">
                                     <label for="buyer_address">Address:</label>
-                                    <input type="text" class="form-control" name="buyer_address" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : $users[0]['address']; ?>" required>
+                                    <input type="text" class="form-control" name="buyer_address" placeholder="e.g: (House number), (Street), (District), (Cipcode City), (State)" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : $users[0]['address']; ?>" required>
                                 </div>
+
+                                <div class="row">
+                                    <!-- State dropdown -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="buyer_state">State:</label>
+                                            <select class="form-control" id="buyer_state" name="buyer_state" required onchange="this.form.submit()">
+                                                <option value="">Select State</option>
+                                                <?php
+                                                $states = json_decode(file_get_contents('cities.json'), true);
+                                                foreach ($states as $state => $cities) {
+                                                    echo '<option value="' . $state . '"';
+                                                    if (isset($_POST['buyer_state']) && $_POST['buyer_state'] == $state) {
+                                                        echo ' selected';
+                                                    }
+                                                    echo '>' . $state . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- City dropdown -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="buyer_city">City:</label>
+                                            <select class="form-control" id="buyer_city" name="buyer_city" required>
+                                                <option value="">Select City</option>
+                                                <?php
+                                                if (isset($_POST['buyer_state']) && $_POST['buyer_state'] != '') {
+                                                    $selectedState = $_POST['buyer_state'];
+                                                    foreach ($states[$selectedState] as $city) {
+                                                        echo '<option value="' . $city . '"';
+                                                        if (isset($_POST['buyer_city']) && $_POST['buyer_city'] == $city) {
+                                                            echo ' selected';
+                                                        }
+                                                        echo '>' . $city . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Zip Code -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="buyer_zipcode">Zip Code:</label>
+                                            <input type="text" class="form-control" name="buyer_zipcode" placeholder="e.g: 98000" pattern="\d{5}" value="<?php echo isset($_POST['buyer_zipcode']) ? $_POST['buyer_zipcode'] : $users[0]['zipcode']; ?>" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Phone Number -->
                                 <div class="form-group">
                                     <label for="buyer_phone_number">Phone Number:</label>
-                                    <input type="tel" class="form-control" name="buyer_phone_number" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : $users[0]['phone_number']; ?>" required>
+                                    <input type="tel" class="form-control" name="buyer_phone_number" placeholder="e.g: 01111248294"pattern="\d{10,11}" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : $users[0]['phone_number']; ?>" required>
                                 </div>
                             </div>
                         </div>
@@ -296,7 +352,7 @@ function isValidPhoneNumber($phoneNumber) {
                         <!-- Payment Method Section -->
                         <h4 class="card-title mt-4">Payment Method</h4>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col">
                                 <div class="form-group">
                                     <label for="payment_method">Select Payment Method:</label>
                                     <select class="form-control" id="payment_method" name="payment_method">
@@ -311,7 +367,7 @@ function isValidPhoneNumber($phoneNumber) {
 
                         <!-- Total Payment Amount Section -->
                         <div class="row mt-4">
-                            <div class="col-md-6">
+                            <div class="col">
                                 <table class="table">
                                     <tbody>
                                         <tr>
