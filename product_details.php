@@ -6,11 +6,20 @@ $secondsInWeek = 60 * 60 * 24 * 7;
 session_set_cookie_params($secondsInWeek);
 session_start();
 
-if (isset ($_SESSION['username'])) {
+if (isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
+    if(isset($_SESSION['role'])) {
+        $role = $_SESSION['role'];
+    } else {
+        // Handle the case when 'role' is not set in session
+        // You can set a default role or perform other actions here
+        $role = null;
+    }
 } else {
-    // Handle the case when there is no 'username' in session (Optional)
-    $username = null;  // Set a default, or perform other actions if needed
+    // Handle the case when there is no 'username' in session
+    // You can perform other actions if needed
+    $username = null;
+    $role = null;
 }
 
 $product_id = isset ($_GET['id']) ? (int) $_GET['id'] : null;
@@ -71,25 +80,31 @@ if (isset ($_GET['success'])) { ?>
             </div>
             <ul class="nav justify-content-end gap-1">
                 <li>
-                    <span class="nav-link text-light fw-medium">
-                        <?php if (isset ($username)) {
-                            echo "Welcome, " . $username . "!";
-                        } ?>
-                    </span>
+                <span class="nav-link text-light fw-medium">
+                    <?php if (isset($username)) {
+                        echo "Welcome, " . $username . "!";
+                    } ?>
+                </span>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link fw-medium" href="products.php">Products</a>
                 </li>
-                <?php if (isset ($_SESSION['username'])) { ?>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="cart.php">Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="orders.php">Order</a>
-                    </li>
-                    <li class="nav-logging">
-                        <a class="nav-link fw-medium" href="customer/logout.php">Logout</a>
-                    </li>
+                <?php if (isset ($_SESSION['username'])) { 
+                    if ($role == null) {?>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="cart.php">Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="orders.php">Order</a>
+                        </li>
+                        <li class="nav-logging">
+                            <a class="nav-link fw-medium" href="customer/logout.php">Logout</a>
+                        </li>
+                    <?php } else { ?>
+                        <li class="nav-logging">
+                            <a class="nav-link fw-medium" href="customer/logout.php">Logout</a>
+                        </li>
+                    <?php } ?>
                 <?php } else { ?>
                     <li class="nav-logging">
                         <a class="nav-link fw-medium" href="customer/login.php">Login</a>
@@ -137,15 +152,17 @@ if (isset ($_GET['success'])) { ?>
                     <form method="POST" action="add_to_cart.php" onsubmit="return checkAndSubmit()">
                         <div class="row pt-3">
                             <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
-                            <div class="col-4">
-                                <div class="input-group h-100">
-                                    <span class="input-group-text" id="quantity">Quantity</span>
-                                    <input type="number" class="form-control" name="quantity" min="1" value="1">
+                            <?php if ($role == null) { ?>
+                                <div class="col-4">
+                                    <div class="input-group h-100">
+                                        <span class="input-group-text" id="quantity">Quantity</span>
+                                        <input type="number" class="form-control" name="quantity" min="1" value="1">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-4">
-                                <button class="btn btn-primary btn-lg" type="submit">Add to Cart</button>
-                            </div>
+                                <div class="col-4">
+                                    <button class="btn btn-primary btn-lg" type="submit">Add to Cart</button>
+                                </div>
+                            <?php } ?>
                         </div>
                     </form>
 

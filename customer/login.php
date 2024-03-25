@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     // Prepared statement for security
-    $stmt = $conn->prepare("SELECT user_id, username, password FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT user_id, username, password, role FROM users WHERE username = ?");
     $stmt->bindParam(1, $username);
     $stmt->execute();
 
@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $user['password'])) {
             // Start a session
             $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
             header("Location: ../index.php");
             exit;
         } else {

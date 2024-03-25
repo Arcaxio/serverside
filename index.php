@@ -6,23 +6,20 @@ $secondsInWeek = 60 * 60 * 24 * 7;
 session_set_cookie_params($secondsInWeek);
 session_start();
 
-if (isset ($_SESSION['username'])) {
+if (isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
+    if(isset($_SESSION['role'])) {
+        $role = $_SESSION['role'];
+    } else {
+        // Handle the case when 'role' is not set in session
+        // You can set a default role or perform other actions here
+        $role = null;
+    }
 } else {
-    // Handle the case when there is no 'username' in session (Optional)
-    $username = null;  // Set a default, or perform other actions if needed
-}
-
-// Pop out message when payment successfully
-if (isset ($_GET['success'])) {
-    ?>
-    <script>
-        window.onload = function () {
-            const toast = new bootstrap.Toast(document.getElementById('confirmPayment'));
-            toast.show();
-        };
-    </script>
-    <?php
+    // Handle the case when there is no 'username' in session
+    // You can perform other actions if needed
+    $username = null;
+    $role = null;
 }
 ?>
 
@@ -144,25 +141,31 @@ if (isset ($_GET['success'])) {
             </div>
             <ul class="nav justify-content-end gap-1">
                 <li>
-                    <span class="nav-link text-light fw-medium">
-                        <?php if (isset ($username)) {
-                            echo "Welcome, " . $username . "!";
-                        } ?>
-                    </span>
+                <span class="nav-link text-light fw-medium">
+                    <?php if (isset($username)) {
+                        echo "Welcome, " . $username . "!";
+                    } ?>
+                </span>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link fw-medium" href="products.php">Products</a>
                 </li>
-                <?php if (isset ($_SESSION['username'])) { ?>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="cart.php">Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="orders.php">Order</a>
-                    </li>
-                    <li class="nav-logging">
-                        <a class="nav-link fw-medium" href="customer/logout.php">Logout</a>
-                    </li>
+                <?php if (isset ($_SESSION['username'])) { 
+                    if ($role == null) {?>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="cart.php">Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="orders.php">Order</a>
+                        </li>
+                        <li class="nav-logging">
+                            <a class="nav-link fw-medium" href="customer/logout.php">Logout</a>
+                        </li>
+                    <?php } else { ?>
+                        <li class="nav-logging">
+                            <a class="nav-link fw-medium" href="customer/logout.php">Logout</a>
+                        </li>
+                    <?php } ?>
                 <?php } else { ?>
                     <li class="nav-logging">
                         <a class="nav-link fw-medium" href="customer/login.php">Login</a>
@@ -315,19 +318,6 @@ if (isset ($_GET['success'])) {
                         <img src="images/rog.svg" />
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- When payment is successfully and received by database -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="confirmPayment" class="toast hide align-items-center text-bg-primary border-0" role="alert"
-            aria-live="assertive" aria-atomic="true">
-            <div class="toast-body d-flex justify-content-between align-items-center">
-                <h6 class="m-0 ms-2">Payment successful! Visit the order page for details!</h6>
-                <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Close">
-                </button>
             </div>
         </div>
     </div>

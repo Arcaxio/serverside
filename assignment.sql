@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 24, 2024 at 05:26 PM
+-- Generation Time: Mar 25, 2024 at 01:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,15 +69,6 @@ CREATE TABLE `ordered_items` (
   `item_quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `ordered_items`
---
-
-INSERT INTO `ordered_items` (`order_item_id`, `order_id`, `product_id`, `user_id`, `item_quantity`) VALUES
-(41, 39, 15, 1, 1),
-(42, 40, 15, 1, 1),
-(43, 40, 16, 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -92,16 +83,6 @@ CREATE TABLE `orders` (
   `order_status` enum('pending','processing','shipped','delivered','cancelled') NOT NULL,
   `payment_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `orders`
---
-
-INSERT INTO `orders` (`order_id`, `user_id`, `order_date`, `total_amount`, `order_status`, `payment_id`) VALUES
-(37, 1, '2024-03-25 00:12:47', 136.74, 'pending', 337097),
-(38, 1, '2024-03-25 00:13:14', 136.74, 'pending', 440896),
-(39, 1, '2024-03-25 00:13:26', 136.74, 'cancelled', 345809),
-(40, 1, '2024-03-25 00:24:15', 242.74, 'pending', 463308);
 
 -- --------------------------------------------------------
 
@@ -123,17 +104,6 @@ CREATE TABLE `payment` (
   `payment_method` varchar(50) NOT NULL,
   `total_payment_amount` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `payment`
---
-
-INSERT INTO `payment` (`payment_id`, `product_id`, `user_id`, `fullname`, `address`, `zipcode`, `city`, `state`, `phone_number`, `payment_datetime`, `payment_method`, `total_payment_amount`) VALUES
-(337097, 15, 1, 'customer123', '22, Lorong Permata 11', 12344, 'Kodiang', 'Kedah', '01234567890', '2024-03-24 17:12:47', 'Debit/Credit Card', 136.74),
-(345809, 15, 1, 'Tay Zhi Hui', '22, Lorong Permata 11', 12344, 'Melaka', 'Melaka', '01234567890', '2024-03-24 17:13:26', 'Debit/Credit Card', 136.74),
-(440896, 15, 1, 'Tay Zhi Hui', '22, Lorong Permata 11', 12344, 'Melaka', 'Melaka', '01234567890', '2024-03-24 17:13:14', 'Debit/Credit Card', 136.74),
-(463308, 15, 1, 'Tay Zhi Hui', '22, Lorong Permata 11', 12344, 'Merlimau', 'Melaka', '01234567890', '2024-03-24 17:24:15', 'Debit/Credit Card', 242.74),
-(838475, 15, 1, 'customer123', '22, Lorong Permata 11', 12344, 'Kodiang', 'Kedah', '01234567890', '2024-03-24 17:12:03', 'Debit/Credit Card', 136.74);
 
 -- --------------------------------------------------------
 
@@ -195,6 +165,7 @@ CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `role` enum('user') DEFAULT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `address` text NOT NULL,
@@ -208,9 +179,9 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `name`, `email`, `address`, `phone_number`, `zipcode`, `city`, `state`) VALUES
-(1, 'customer123', '$2y$10$/0uS4KyGj8uJS7aozeO9seWMGQKZkG8yorslPHC1I/av6GJIRbxdm', '', 'customer123@mail.com', '', '', '', '', ''),
-(5, 'testing123', '$2y$10$k5.HqC.4ueEf/LqUXsUcmOyTVQ190xijrc5EUtw59pdTwW6x/ghcq', 'Connie Tang Ming Xin', 'testing123@hotmail.com', 'Lot 6135, Lorong Permata 11', '01111248294', '98000', 'Miri', 'Sarawak');
+INSERT INTO `users` (`user_id`, `username`, `password`, `role`, `name`, `email`, `address`, `phone_number`, `zipcode`, `city`, `state`) VALUES
+(1, 'customer123', '$2y$10$/0uS4KyGj8uJS7aozeO9seWMGQKZkG8yorslPHC1I/av6GJIRbxdm', NULL, '', 'customer123@mail.com', '', '', '', '', ''),
+(5, 'testing123', '$2y$10$k5.HqC.4ueEf/LqUXsUcmOyTVQ190xijrc5EUtw59pdTwW6x/ghcq', NULL, 'Connie Tang Ming Xin', 'testing123@hotmail.com', 'Lot 6135, Lorong Permata 11', '01111248294', '98000', 'Miri', 'Sarawak');
 
 --
 -- Indexes for dumped tables
@@ -281,7 +252,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -293,13 +264,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `ordered_items`
 --
 ALTER TABLE `ordered_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `payment`
@@ -323,7 +294,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables

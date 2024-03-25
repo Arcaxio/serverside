@@ -69,6 +69,18 @@
 
     // Reverse the order of the $orders array
     $orders = array_reverse($orders, true); // 'true' parameter preserves the keys
+
+    // Pop out message when payment successfully
+    if (isset($_GET['success'])) {
+        ?>
+        <script>
+            window.onload = function () {
+                const toast = new bootstrap.Toast(document.getElementById('continue'));
+                toast.show();
+            };
+        </script>
+        <?php
+    }
 ?>
 
 <script>
@@ -295,6 +307,18 @@
                 </div><!-- Column End -->
             </div><!-- Row End -->
     </div><!-- Container End -->
+
+    <!-- When payment is successfully and received by database -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="continue" class="toast hide align-items-center text-bg-primary border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex justify-content-between align-items-center">
+                <h6 class="m-0 ms-2">Payment successful! Visit the order page for details!</h6>
+                <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Close">
+                </button>
+            </div>
+        </div>
+    </div>
 
     <footer class="bg-body-secondary mt-auto">
         <div class="container py-5">

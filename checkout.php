@@ -88,20 +88,6 @@
             echo '<script>alert("Please provide a valid phone number.");</script>';
         } else {
             // Proceed with payment confirmation
-
-            /*
-            // Update users information
-            $stmt = $conn->prepare("UPDATE users SET name = ?, address = ?, phone_number = ?, zipcode = ?, city = ?, state = ? WHERE user_id = ?");
-            $stmt->bindParam(1, $buyerName);
-            $stmt->bindParam(2, $address);
-            $stmt->bindParam(3, $phoneNumber);
-            $stmt->bindParam(4, $zipCode);
-            $stmt->bindParam(5, $city);
-            $stmt->bindParam(6, $state);
-            $stmt->bindParam(7, $userId);
-            $stmt->execute();
-            */
-
             // Insert payment details into payment table
             $paymentMethod = $_POST['payment_method']; // Assuming payment method is selected in the form
             // Fetch the cart_id associated with the user
@@ -156,8 +142,8 @@
                     echo "Error deleting cart items: " . $stmt->errorInfo()[2]; // Output any errors
                 }
 
-                // Redirect to index.php with success parameter
-                header("Location: index.php?success=true");
+                // Redirect to payment_gateway.php with success parameter
+                header("Location: payment_gateway.php?success=true&payment_method=" . urlencode($paymentMethod));
                 exit();
             
             } else {
@@ -365,8 +351,8 @@
                         <div class="row"><!-- New row -->
                             <div class="col">
                                 <div class="form-group">
-                                    <label for="payment_method">Select Payment Method:</label>
-                                    <select class="form-control" id="payment_method" name="payment_method">
+                                <input type="hidden" name="payment_method" value="<?php echo $paymentMethod; ?>">
+                                    <select class="form-control" id="payment_method" name="payment_method" required>
                                         <option value="Debit/Credit Card">Debit/Credit Card</option>
                                         <option value="PayPal">PayPal</option>
                                         <option value="E-Wallet">E-Wallet</option>
