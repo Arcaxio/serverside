@@ -144,9 +144,9 @@ if (isset ($_GET['success'])) { ?>
                             Description:
                         </h4>
                         <div style="max-height: 228px; overflow: auto;">
-                            <h4>
+                            <p style="font-size: 20px;">
                                 <?php echo $product['description']; ?>
-                            </h4>
+                            </p>
                         </div>
                     </div>
                     <form method="POST" action="add_to_cart.php" onsubmit="return checkAndSubmit()">
