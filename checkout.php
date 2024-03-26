@@ -122,11 +122,12 @@
                     $productId = $item['product_id'];
                     $quantity = $item['quantity'];
 
-                    $order_item_stmt = $conn->prepare("INSERT INTO ordered_items( order_id, product_id, user_id, item_quantity)VALUES(?,?,?,?)");
+                    $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(order_id, payment_id, product_id, user_id, item_quantity)VALUES(?,?,?,?,?)");
                     $order_item_stmt->bindParam(1,$orderId);
-                    $order_item_stmt->bindParam(2,$productId);
-                    $order_item_stmt->bindParam(3,$userId);
-                    $order_item_stmt->bindParam(4,$quantity);
+                    $order_item_stmt->bindParam(2,$paymentId);
+                    $order_item_stmt->bindParam(3,$productId);
+                    $order_item_stmt->bindParam(4,$userId);
+                    $order_item_stmt->bindParam(5,$quantity);
                     $order_item_stmt->execute();
                 }
 
@@ -275,7 +276,9 @@
                                 <!-- Full Name -->
                                 <div class="form-group">
                                     <label for="buyer_name">Full Name:</label>
-                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" placeholder="e.g: Full Name (as per IC/Passport)" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : ''; ?>" required>
+                                    <br>
+                                    <small style="color: #A9A9A9;">[Note: You can change your Full Name anytime.]</small>
+                                    <input type="text" class="form-control" id="buyer_name" name="buyer_name" placeholder="e.g: Full Name (as per IC/Passport)" value="<?php echo isset($_POST['buyer_name']) ? $_POST['buyer_name'] : $users[0]['name']; ?>" required>
                                 </div>
                                 <!-- Email -->
                                 <div class="form-group">
@@ -285,7 +288,9 @@
                                 <!-- Address -->
                                 <div class="form-group">
                                     <label for="buyer_address">Address:</label>
-                                    <input type="text" class="form-control" name="buyer_address" placeholder="e.g: (House/apartment/flat number), (Street)" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : ''; ?>" required>
+                                    <br>
+                                    <small style="color: #A9A9A9;">[Note: You can change your Address anytime.]</small>
+                                    <input type="text" class="form-control" name="buyer_address" placeholder="e.g: (House/apartment/flat number), (Street)" value="<?php echo isset($_POST['buyer_address']) ? $_POST['buyer_address'] : $users[0]['address']; ?>" required>
                                 </div>
 
                                 <div class="row"><!-- New row -->
@@ -333,7 +338,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="buyer_zipcode">Zip Code:</label>
-                                            <input type="text" class="form-control" name="buyer_zipcode" placeholder="e.g: 12345" pattern="\d{5}" value="<?php echo isset($_POST['buyer_zipcode']) ? $_POST['buyer_zipcode'] : ''; ?>" required>
+                                            <input type="text" class="form-control" name="buyer_zipcode" placeholder="e.g: 12345" pattern="\d{5}" value="<?php echo isset($_POST['buyer_zipcode']) ? $_POST['buyer_zipcode'] : $users[0]['zipcode']; ?>" required>
                                         </div>
                                     </div>
                                 </div><!-- Row end -->
@@ -341,7 +346,9 @@
                                 <!-- Phone Number -->
                                 <div class="form-group">
                                     <label for="buyer_phone_number">Phone Number:</label>
-                                    <input type="tel" class="form-control" name="buyer_phone_number" placeholder="e.g: 0123456789"pattern="\d{10,11}" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : ''; ?>" required>
+                                    <br>
+                                    <small style="color: #A9A9A9;">[Note: You can change your Phone Number anytime.]</small>
+                                    <input type="tel" class="form-control" name="buyer_phone_number" placeholder="e.g: 0123456789"pattern="\d{10,11}" value="<?php echo isset($_POST['buyer_phone_number']) ? $_POST['buyer_phone_number'] : $users[0]['phone_number']; ?>" required>
                                 </div>
                             </div>
                         </div><!-- Row end -->
