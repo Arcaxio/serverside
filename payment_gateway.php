@@ -61,7 +61,7 @@ if (isset($_POST['payment_method'])) {
                     </div>
                     <div class="text-center payment-success">
                         <h2>Payment Complete</h2>
-                        <p>Your <strong id="successPaymentMethod"></stong> payment was successful!</p>
+                        <p class="mt-3">Your <strong id="successPaymentMethod"></strong> payment was successful!</p>
                         <button class="btn btn-primary" onclick="redirectToIndex()">Continue</button>
                     </div>
                 </div>
