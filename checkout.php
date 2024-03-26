@@ -122,12 +122,10 @@
                     $productId = $item['product_id'];
                     $quantity = $item['quantity'];
 
-                    $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(order_id, payment_id, product_id, user_id, item_quantity)VALUES(?,?,?,?,?)");
+                    $order_item_stmt = $conn->prepare("INSERT INTO ordered_items(order_id, product_id, item_quantity)VALUES(?,?,?)");
                     $order_item_stmt->bindParam(1,$orderId);
-                    $order_item_stmt->bindParam(2,$paymentId);
-                    $order_item_stmt->bindParam(3,$productId);
-                    $order_item_stmt->bindParam(4,$userId);
-                    $order_item_stmt->bindParam(5,$quantity);
+                    $order_item_stmt->bindParam(2,$productId);
+                    $order_item_stmt->bindParam(3,$quantity);
                     $order_item_stmt->execute();
                 }
 
