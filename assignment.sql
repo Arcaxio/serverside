@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 26, 2024 at 12:48 PM
+-- Generation Time: Mar 27, 2024 at 10:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,6 +33,20 @@ CREATE TABLE `cart` (
   `user_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`cart_id`, `product_id`, `user_id`, `quantity`) VALUES
+(109, 14, 7, 1),
+(110, 15, 7, 1),
+(111, 16, 7, 1),
+(112, 20, 7, 1),
+(113, 18, 7, 1),
+(114, 19, 7, 1),
+(115, 3, 7, 1),
+(116, 17, 7, 1);
 
 -- --------------------------------------------------------
 
@@ -67,6 +81,19 @@ CREATE TABLE `ordered_items` (
   `item_quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `ordered_items`
+--
+
+INSERT INTO `ordered_items` (`order_item_id`, `order_id`, `product_id`, `item_quantity`) VALUES
+(73, 69, 14, 1),
+(74, 69, 20, 1),
+(75, 70, 16, 1),
+(76, 71, 18, 1),
+(77, 72, 19, 1),
+(78, 73, 3, 1),
+(79, 73, 17, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -82,6 +109,17 @@ CREATE TABLE `orders` (
   `payment_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `user_id`, `order_date`, `total_amount`, `order_status`, `payment_id`) VALUES
+(69, 7, '2024-03-28 04:39:47', 1249.74, 'pending', 111128),
+(70, 7, '2024-03-28 04:41:04', 116.60, 'processing', 403026),
+(71, 7, '2024-03-28 04:41:54', 47.70, 'shipped', 266836),
+(72, 7, '2024-03-28 04:43:01', 106.00, 'delivered', 998644),
+(73, 7, '2024-03-28 04:44:09', 127.19, 'cancelled', 240259);
+
 -- --------------------------------------------------------
 
 --
@@ -92,16 +130,27 @@ CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `fullname` varchar(50) NOT NULL,
-  `address` varchar(50) NOT NULL,
+  `fullname` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
   `zipcode` int(5) NOT NULL,
-  `city` varchar(50) NOT NULL,
-  `state` varchar(50) NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `state` varchar(255) NOT NULL,
   `phone_number` varchar(11) NOT NULL,
   `payment_datetime` datetime NOT NULL,
-  `payment_method` varchar(50) NOT NULL,
-  `total_payment_amount` double NOT NULL
+  `payment_method` varchar(255) NOT NULL,
+  `total_payment_amount` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `product_id`, `user_id`, `fullname`, `address`, `zipcode`, `city`, `state`, `phone_number`, `payment_datetime`, `payment_method`, `total_payment_amount`) VALUES
+(111128, 14, 7, 'customer full name', 'No 123, Jalan 123, Taman 123', 31900, 'Kampar', 'Perak', '0123456789', '2024-03-27 21:39:47', 'Debit/Credit Card', 1249.74),
+(240259, 3, 7, 'buyer4', 'buyer4 address', 87000, 'Labuan', 'Wilayah Persekutuan Labuan', '12345678910', '2024-03-27 21:44:09', 'E-Wallet', 127.19),
+(266836, 18, 7, 'buyer2', 'buyer2 address', 79100, 'Johor Bahru', 'Johor', '0198558294', '2024-03-27 21:41:54', 'E-Wallet', 47.70),
+(403026, 16, 7, 'buyer1 name', 'buyer1 address', 98000, 'Miri', 'Sarawak', '01111248294', '2024-03-27 21:41:04', 'PayPal', 116.60),
+(998644, 19, 7, 'buyer3', 'buyer3 address', 88000, 'Kota Kinabalu', 'Sabah', '0987654321', '2024-03-27 21:43:01', 'Debit/Credit Card', 106.00);
 
 -- --------------------------------------------------------
 
@@ -140,7 +189,7 @@ INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `i
 
 CREATE TABLE `staff` (
   `staff_id` int(11) NOT NULL,
-  `username` varchar(50) NOT NULL,
+  `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('admin','manager') DEFAULT 'manager'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -150,8 +199,8 @@ CREATE TABLE `staff` (
 --
 
 INSERT INTO `staff` (`staff_id`, `username`, `password`, `role`) VALUES
-(2, 'username123', '$2y$10$V8fNtj9dzDMLEg4DQh1D1Og53ui.J2YHhHUajPgKfyyg5NVhML2bi', 'manager'),
-(3, 'username789', '$2y$10$BjGDRHaBM8.ZEzWMqxGkL..J8Hja/OiGB..hlGkbX05U.36dnrfwG', 'admin');
+(1, 'username123', '$2y$10$esmN8eAHe/Hr3NSV4VJIue1gQ3EcqsFok.Kld52EPMF39gTK2OzZC', 'admin'),
+(2, '123username', '$2y$10$zsnTyVs4MPw7ILW0P4yxbOFcFOENTujjOHqJKIhOPixnx3FSnu/au', 'manager');
 
 -- --------------------------------------------------------
 
@@ -166,9 +215,9 @@ CREATE TABLE `users` (
   `role` enum('user') DEFAULT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `address` text NOT NULL,
+  `address` varchar(255) NOT NULL,
   `phone_number` varchar(255) NOT NULL,
-  `zipcode` varchar(255) NOT NULL,
+  `zipcode` int(5) NOT NULL,
   `city` varchar(255) NOT NULL,
   `state` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -178,8 +227,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `role`, `name`, `email`, `address`, `phone_number`, `zipcode`, `city`, `state`) VALUES
-(1, 'customer123', '$2y$10$/0uS4KyGj8uJS7aozeO9seWMGQKZkG8yorslPHC1I/av6GJIRbxdm', NULL, '', 'customer123@mail.com', '', '', '', '', ''),
-(5, 'testing123', '$2y$10$k5.HqC.4ueEf/LqUXsUcmOyTVQ190xijrc5EUtw59pdTwW6x/ghcq', NULL, 'Connie Tang Ming Xin', 'testing123@hotmail.com', 'Lot 6135, Lorong Permata 11', '01111248294', '98000', 'Miri', 'Sarawak');
+(7, 'customer123', '$2y$10$5FACw9mvCWfKbDZWlSK6kuq2s1d1UMtIBdfkzy0bWm.0pivkAPdf2', NULL, 'customer full name', 'customer123@mail.com', 'No 123, Jalan 123, Taman 123', '0123456789', 31900, 'Kampar', 'Perak');
 
 --
 -- Indexes for dumped tables
@@ -226,7 +274,8 @@ ALTER TABLE `payment`
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
-  ADD PRIMARY KEY (`product_id`);
+  ADD PRIMARY KEY (`product_id`),
+  ADD KEY `product_category_id` (`category_id`);
 
 --
 -- Indexes for table `staff`
@@ -249,7 +298,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -261,19 +310,19 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `ordered_items`
 --
 ALTER TABLE `ordered_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=987186;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=998645;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -285,13 +334,13 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
-  MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -323,6 +372,12 @@ ALTER TABLE `orders`
 ALTER TABLE `payment`
   ADD CONSTRAINT `payment_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
   ADD CONSTRAINT `payment_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `product_category_id` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
