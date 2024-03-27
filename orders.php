@@ -234,28 +234,28 @@
                                         <?php foreach($order['products'] as $product) { ?>
                                             <tr>
                                                 <td><?php echo $product['product_name']; ?></td>
-                                                <td class="text-end">$<?php echo $product['price']; ?></td>
-                                                <td class="text-end"><?php echo $product['item_quantity']; ?></td>
-                                                <td class="text-end">$<?php echo ($product['price'] * $product['item_quantity']); ?></td>
+                                                <td class="text-end">RM <?php echo $product['price']; ?></td>
+                                                <td class="text-end"> <?php echo $product['item_quantity']; ?></td>
+                                                <td class="text-end">RM <?php echo ($product['price'] * $product['item_quantity']); ?></td>
                                             </tr>
                                         <?php $total += $product['price'] * $product['item_quantity'];} ?>
                                             <tr>
                                                 <td>Shipping Fee:</td>
                                                 <td></td>
                                                 <td></td>
-                                                <td class="text-end">$10.00</td>
+                                                <td class="text-end">RM 10.00</td>
                                             </tr>
                                             <tr>
                                                 <td>Sales Taxes (6%):</td>
                                                 <td></td>
                                                 <td></td>
-                                                <td class="text-end">$<?php echo number_format(($total + 10) * 0.06,2); ?></td>
+                                                <td class="text-end">RM <?php echo number_format(($total + 10) * 0.06,2); ?></td>
                                             </tr>
                                             <tr>
                                                 <th>Total: </th>
                                                 <td></td>
                                                 <td></td>
-                                                <th class="text-end">$<?php echo $order['total_amount']; ?></th>
+                                                <th class="text-end">RM <?php echo $order['total_amount']; ?></th>
                                             </tr>
                                         </tbody>
                                 </table>
