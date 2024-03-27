@@ -92,7 +92,8 @@ function isValidPhoneNumber($phoneNumber)
                             <!-- Username -->
                             <div class="form-group">
                                 <label for="username">Username</label>
-                                <input type="text" id="username" name="username" class="form-control" required>
+                                <input type="text" id="username" name="username" class="form-control" 
+                                placeholder="e.g: example123" required>
                             </div>
                             <!-- Full Name -->
                             <div class="form-group">
@@ -104,7 +105,7 @@ function isValidPhoneNumber($phoneNumber)
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <input type="email" id="email" name="email" class="form-control"
-                                    placeholder="e.g: mail@mail.com" required>
+                                    placeholder="e.g: example@mail.com" required>
                             </div>
                             <!-- Address -->
                             <div class="form-group">
@@ -159,8 +160,8 @@ function isValidPhoneNumber($phoneNumber)
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="zipcode">Zip Code:</label>
-                                        <input type="text" class="form-control" name="zipcode" placeholder="e.g: 12345"
-                                            pattern="\d{5}" required>
+                                        <input type="text" class="form-control" name="zipcode" 
+                                            placeholder="e.g: 12345" pattern="\d{5}" required>
                                     </div>
                                 </div>
                             </div><!-- Row end -->
@@ -168,19 +169,20 @@ function isValidPhoneNumber($phoneNumber)
                             <!-- Phone Number -->
                             <div class="form-group">
                                 <label for="phone_number">Phone Number:</label>
-                                <input type="tel" class="form-control" name="phone_number" placeholder="e.g: 0123456789"
-                                    pattern="\d{10,11}" required>
+                                <input type="tel" class="form-control" name="phone_number" 
+                                    placeholder="e.g: 0123456789" pattern="\d{10,11}" required>
                             </div>
                             <!-- Password -->
                             <div class="form-group">
                                 <label for="password">Password</label>
-                                <input type="password" id="password" name="password" class="form-control" required>
+                                <input type="password" id="password" name="password" class="form-control" 
+                                    placeholder="e.g: example123" required>
                             </div>
                             <!-- Confirm Password -->
                             <div class="form-group">
                                 <label for="confirm_password">Confirm Password</label>
-                                <input type="password" id="confirm_password" name="confirm_password"
-                                    class="form-control" required>
+                                <input type="password" id="confirm_password" name="confirm_password" 
+                                    placeholder="e.g: example123" class="form-control" required>
                             </div>
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary btn-block">Register</button>
